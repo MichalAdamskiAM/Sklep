@@ -12,3 +12,4 @@ C:\Users\user\Documents\GitHub\Sklep\Sklep\Sklep\obj\Debug\net7.0\refint\Sklep.d
 C:\Users\user\Documents\GitHub\Sklep\Sklep\Sklep\obj\Debug\net7.0\Sklep.pdb
 C:\Users\user\Documents\GitHub\Sklep\Sklep\Sklep\obj\Debug\net7.0\Sklep.genruntimeconfig.cache
 C:\Users\user\Documents\GitHub\Sklep\Sklep\Sklep\obj\Debug\net7.0\ref\Sklep.dll
+C:\Users\user\Documents\GitHub\Sklep\Sklep\Sklep\obj\Debug\net7.0\Sklep.sourcelink.json
