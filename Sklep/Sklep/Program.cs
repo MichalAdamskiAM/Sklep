@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Xml.Linq;
 
 namespace Sklep
 {
@@ -14,8 +15,6 @@ namespace Sklep
                 this.email = email;
                 this.haslo = haslo;
             }
-
-
         }
 
         class Lista_klientow
@@ -30,47 +29,37 @@ namespace Sklep
 
         class Produkt
         {
-
-            private string nazwa;
-            private uint liczba_sztuk;
-            private double cena;
-
-            Produkt(string nazwa,uint liczba_sztuk)
-            {
-                this.nazwa = nazwa;
-                this.liczba_sztuk = liczba_sztuk;
-            }
-            public string Nazwa {
-                get { return nazwa; }
-            }
+            public string Nazwa { get; }
+            private double liczba_sztuk;
             public double Liczba_sztuk
             {
                 get { return liczba_sztuk; }
+                set
+                {
+                    if (Liczba_sztuk - value > 0)
+                    {
+                        Liczba_sztuk = (uint)((int)Liczba_sztuk + value);
+                    }
+                    else
+                    {
+                        Liczba_sztuk = 0;
+                    }
+                }
             }
+            private double cena { get; }
 
-            public bool Set_liczba_Sztuk(int o_ile_zmnienic)
+            public Produkt(string nazwa, uint liczba_sztuk)
             {
-                if(liczba_sztuk-o_ile_zmnienic>0)
-                {
-                    liczba_sztuk = (uint)((int)liczba_sztuk+o_ile_zmnienic);
-                    return true;
-                }
-                else
-                {
-                    liczba_sztuk = 0;
-                    return false;
-                }
+                this.Nazwa = nazwa;
+                this.Liczba_sztuk = liczba_sztuk;
             }
-        }
 
-        static void Main(string[] args)
-        {
-
-            //
-            //costam@gmail.com; maslo; chleb
-            //inny@gmail.com; suszarka; dzem; 
+            static void Main(string[] args)
+            {
 
 
+
+            }
         }
     }
 }
