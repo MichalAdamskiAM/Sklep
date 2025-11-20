@@ -53,13 +53,23 @@ namespace Sklep
                 this.Nazwa = nazwa;
                 this.Liczba_sztuk = liczba_sztuk;
             }
+        }
 
-            static void Main(string[] args)
+        class Magazyn
+        {
+            private List<Produkt> produkty;
+
+            public Magazyn()
             {
-
-
-
+                produkty = new List<Produkt>();
             }
+        }
+
+        static void Main(string[] args)
+        {
+
+
+
         }
     }
 }
