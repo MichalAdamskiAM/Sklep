@@ -1,10 +1,14 @@
 {
   "Version": 1,
-  "WorkspaceRootPath": "C:\\Users\\user\\Documents\\GitHub\\Sklep\\Sklep\\",
+  "WorkspaceRootPath": "C:\\Users\\Micha\u0142\\Documents\\GitHub\\Sklep\\Sklep\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{AFF9CB2E-FBC5-4117-AB2E-1FC625C5701A}|Sklep\\Sklep.csproj|c:\\users\\user\\documents\\github\\sklep\\sklep\\sklep\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{AFF9CB2E-FBC5-4117-AB2E-1FC625C5701A}|Sklep\\Sklep.csproj|c:\\users\\micha\u0142\\documents\\github\\sklep\\sklep\\sklep\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{AFF9CB2E-FBC5-4117-AB2E-1FC625C5701A}|Sklep\\Sklep.csproj|solutionrelative:sklep\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\Micha\u0142\\Documents\\GitHub\\Sklep\\Sklep\\dane\\uzytkownicy.csv||{8B382828-6202-11D1-8870-0000F87579D2}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:dane\\uzytkownicy.csv||{8B382828-6202-11D1-8870-0000F87579D2}"
     }
   ],
   "DocumentGroupContainers": [
@@ -14,17 +18,46 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 0,
+          "SelectedChildIndex": 5,
           "Children": [
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{b1e99781-ab81-11d0-b683-00aa00a3ee26}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{1c4feeaa-4718-4aa9-859d-94ce25d182ba}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:4:0:{34c7837f-3b3a-449c-bdf0-bdad86cbaf4a}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{d3750d8a-574b-4fb3-b7e2-aa8af40e8231}"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "uzytkownicy.csv",
+              "DocumentMoniker": "C:\\Users\\Micha\u0142\\Documents\\GitHub\\Sklep\\Sklep\\dane\\uzytkownicy.csv",
+              "RelativeDocumentMoniker": "dane\\uzytkownicy.csv",
+              "ToolTip": "C:\\Users\\Micha\u0142\\Documents\\GitHub\\Sklep\\Sklep\\dane\\uzytkownicy.csv",
+              "RelativeToolTip": "dane\\uzytkownicy.csv",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAASAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.002120|",
+              "WhenOpened": "2025-11-20T15:12:16.149Z",
+              "EditorCaption": ""
+            },
             {
               "$type": "Document",
               "DocumentIndex": 0,
               "Title": "Program.cs",
-              "DocumentMoniker": "C:\\Users\\user\\Documents\\GitHub\\Sklep\\Sklep\\Sklep\\Program.cs",
+              "DocumentMoniker": "C:\\Users\\Micha\u0142\\Documents\\GitHub\\Sklep\\Sklep\\Sklep\\Program.cs",
               "RelativeDocumentMoniker": "Sklep\\Program.cs",
-              "ToolTip": "C:\\Users\\user\\Documents\\GitHub\\Sklep\\Sklep\\Sklep\\Program.cs",
+              "ToolTip": "C:\\Users\\Micha\u0142\\Documents\\GitHub\\Sklep\\Sklep\\Sklep\\Program.cs",
               "RelativeToolTip": "Sklep\\Program.cs",
-              "ViewState": "AgIAADsAAAAAAAAAAAAswFIAAAAAAAAAAAAAAA==",
+              "ViewState": "AgIAAGQBAAAAAAAAAAAAAH4BAAABAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-10-03T08:25:50.295Z",
               "EditorCaption": ""
