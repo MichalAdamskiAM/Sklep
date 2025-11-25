@@ -6,6 +6,11 @@ namespace Sklep
 {
     class Program
     {
+        const string odstep = "\n\n";
+        const string sciezka_uzytkownicy = "../../../../dane/uzytkownicy.csv";
+        const string sciezka_koszyki = "../../../../dane/koszyk"; // + id + ".csv"
+        const string sciezka_magazyn = "../../../../dane/magazyn.csv";
+
         class Uzytkownik
         {
             private static uint liczba_uzytkownikow = 0;
@@ -138,25 +143,53 @@ namespace Sklep
             }
         }
 
-        class Magazyn
+        abstract class Zbior_produktow
         {
-            private List<Produkt> produkty;
+            protected List<Produkt> produkty;
 
-            public Magazyn()
+            public Zbior_produktow()
             {
                 produkty = new List<Produkt>();
             }
 
             public Produkt? znajdz_po_id(uint id)
             {
-                foreach(Produkt produkt in produkty)
+                foreach (Produkt produkt in produkty)
                 {
-                    if(produkt.id == id)
+                    if (produkt.id == id)
                     {
                         return produkt;
                     }
                 }
                 return null;
+            }
+
+            public void wyswietl()
+            {
+                int i = 1;
+                foreach (Produkt produkt in produkty)
+                {
+                    if (produkt.liczba_sztuk > 0)
+                    {
+                        Console.WriteLine(i++ + ". " + produkt.nazwa + " - " + produkt.cena + " zł. Liczba sztuk: " + produkt.liczba_sztuk + ".");
+                    }
+                }
+            }
+        }
+
+        class Magazyn : Zbior_produktow
+        {
+            public Magazyn(string sciezka)
+            {
+                //todo
+            }
+        }
+
+        class Koszyk : Zbior_produktow //zalozenie jest takie ze jak produkt jest w koszyku to juz nie ma go w magazynie (dzieki czemu np nikt nie kupi nagle produktu ktory ktos juz mial jakby zarezerwowany)
+        {
+            public Koszyk(string sciezka)
+            {
+                //todo
             }
         }
 
@@ -164,7 +197,7 @@ namespace Sklep
         {
             static public Uzytkownik start(Lista_uzytkownikow uzytkownicy)
             {
-                Console.WriteLine("SKLEP");
+                Console.WriteLine("APLIKACJA SKLEP - Michał Adamski i Bartosz Kurto 4P1T");
                 string akcja;
                 while (true)
                 {
@@ -189,6 +222,7 @@ namespace Sklep
 
                 while (true)
                 {
+                    Console.WriteLine(odstep);
                     Console.WriteLine("LOGOWANIE");
                     Console.Write("Email: ");
                     email = Console.ReadLine();
@@ -214,6 +248,7 @@ namespace Sklep
                 string email, haslo;
                 Uzytkownik nowy_uzytkownik;
 
+                Console.WriteLine(odstep);
                 Console.WriteLine("REJESTRACJA");
 
                 while (true)
@@ -241,26 +276,107 @@ namespace Sklep
                 Console.WriteLine("Konto zostało utworzone.");
                 return nowy_uzytkownik;
             }
+
+            static public void panel_glowny(Uzytkownik zalogowany_uzytkownik, Magazyn magazyn)
+            {
+                if(zalogowany_uzytkownik.id == 0)
+                {
+                    panel_administratora(magazyn);
+                }
+                else
+                {
+                    Koszyk koszyk = new Koszyk(sciezka_koszyki);
+                    panel_klienta(zalogowany_uzytkownik, magazyn, koszyk);
+                }
+            }
+
+            static public void panel_administratora(Magazyn magazyn)
+            {
+                Console.WriteLine(odstep);
+                Console.WriteLine("SKLEP - PANEL GŁÓWNY ADMINISTRATORA");
+                string akcja;
+                while (true)
+                {
+                    Console.WriteLine("Wybierz akcję:\n 1. Wyświetl produkty dostępne w sklepie.\n 2. Zapisz dane i zamknij aplikację.");
+                    akcja = Console.ReadLine();
+                    if(akcja == "1")
+                    {
+                        administrator_zarzadzanie_magazynem(magazyn);
+                        return;
+                    }
+                    else if(akcja == "2")
+                    {
+                        return;
+                    }
+                    Console.WriteLine("Wprowadzono niepoprawne polecenie.");
+                }
+            }
+
+            static public void panel_klienta(Uzytkownik zalogowany_klient, Magazyn magazyn, Koszyk koszyk)
+            {
+                Console.WriteLine(odstep);
+                Console.WriteLine("SKLEP - PANEL GŁÓWNY KLIENTA");
+                string akcja;
+                while (true)
+                {
+                    Console.WriteLine("Wybierz akcję:\n 1. Wyświetl produkty dostępne w sklepie.\n 2. Wyświetl swój koszyk\n 3. Zapisz dane i zamknij aplikację.");
+                    akcja = Console.ReadLine();
+                    if (akcja == "1")
+                    {
+                        klient_dostepne_produkty(magazyn);
+                        return;
+                    }
+                    else if (akcja == "2")
+                    {
+                        klient_koszyk(koszyk);
+                        return;
+                    }
+                    else if (akcja == "3")
+                    {
+                        return;
+                    }
+                    Console.WriteLine("Wprowadzono niepoprawne polecenie.");
+                }
+            }
+
+            static public void klient_dostepne_produkty(Magazyn magazyn)
+            {
+                Console.WriteLine(odstep);
+                Console.WriteLine("SKLEP - DOSTĘPNE PRODUKTY");
+                Console.WriteLine("Produkty aktualnie dostępne w sklepie:");
+                magazyn.wyswietl();
+                Console.WriteLine("Wpisz numer produktu, aby dodać go do koszyka. Kliknij enter, aby wrócić do panelu głównego.");
+                //todo
+            }
+
+            static public void klient_koszyk(Koszyk koszyk)
+            {
+                Console.WriteLine(odstep);
+                Console.WriteLine("TWÓJ KOSZYK");
+                Console.WriteLine("Produkty znajdujące się w twoim koszyku:");
+                koszyk.wyswietl();
+                Console.WriteLine("Wpisz numer produktu, aby dodać go do koszyka. Wpisz b, aby dokonać zakupu całej zawartości koszyka. Kliknij enter, aby wrócić do panelu głównego.");
+                //todo
+            }
+
+            static public void administrator_zarzadzanie_magazynem(Magazyn magazyn)
+            {
+                magazyn.wyswietl();
+                Console.WriteLine("Wpisz numer pozycji, aby edytować produkt. Kliknij enter, aby wrócić do panelu głównego.");
+                //todo
+            }
         }
 
         static void Main(string[] args)
         {
-            const string sciezka_uzytkownicy = "../../../../dane/uzytkownicy.csv";
-            const string sciezka_koszyki = "../../../../dane/koszyk"; //+ id + ".csv"
             Lista_uzytkownikow uzytkownicy = new Lista_uzytkownikow(sciezka_uzytkownicy);
             Uzytkownik zalogowany_uzytkownik;
 
             zalogowany_uzytkownik = Interfejs.start(uzytkownicy);
+            Magazyn magazyn = new Magazyn(sciezka_magazyn);
+            Interfejs.panel_glowny(zalogowany_uzytkownik, magazyn);
 
-
-
-
-
-
-
-
-
-            Console.ReadKey();
+            //todo zapisywanie danych
         }
     }
 }
