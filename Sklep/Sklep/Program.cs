@@ -8,10 +8,11 @@ namespace Sklep
     {
         const string odstep = "\n\n";
         const string sciezka_uzytkownicy = "../../../../dane/uzytkownicy.csv";
-        const string sciezka_koszyki = "../../../../dane/koszyk"; // + id + ".csv"
+        const string sciezka_koszyki_cz1 = "../../../../dane/koszyk";
+        const string sciezka_koszyki_cz3 = ".csv";
         const string sciezka_magazyn = "../../../../dane/magazyn.csv";
 
-        class Uzytkownik
+        abstract class Uzytkownik
         {
             private static uint liczba_uzytkownikow = 0;
             public uint id { get; }
@@ -64,10 +65,10 @@ namespace Sklep
                     return;
                 }
 
-                StreamReader streamReader = new StreamReader(sciezka);
+                StreamReader streamReader = new StreamReader(sciezka, System.Text.Encoding.UTF8);
                 string wiersz;
 
-                while((wiersz = streamReader.ReadLine()) != null)
+                while((wiersz = streamReader.ReadLine()) is not null)
                 {
                     if (wiersz[0] == '0')
                     {
@@ -121,10 +122,12 @@ namespace Sklep
             public uint liczba_sztuk { get; private set; }
             public double cena { get; private set; }
 
-            public Produkt(string nazwa, uint liczba_sztuk, double cena)
+            public Produkt(uint id, string nazwa, uint liczba_sztuk, double cena)
             {
+                this.id = id;
                 this.nazwa = nazwa;
                 this.liczba_sztuk = liczba_sztuk;
+                this.cena = cena;
             }
 
             public void zwieksz_liczbe_sztuk(uint o_ile)
@@ -179,21 +182,99 @@ namespace Sklep
 
         class Magazyn : Zbior_produktow
         {
+            private uint nastepne_wolne_id = 0;
+
             public Magazyn(string sciezka)
             {
-                //todo
-            }
-        }
+                produkty = new List<Produkt>();
 
-        class Koszyk : Zbior_produktow //zalozenie jest takie ze jak produkt jest w koszyku to juz nie ma go w magazynie (dzieki czemu np nikt nie kupi nagle produktu ktory ktos juz mial jakby zarezerwowany)
-        {
-            public Koszyk(string sciezka)
+                if (!File.Exists(sciezka))
+                {
+                    return;
+                }
+
+                StreamReader streamReader = new StreamReader(sciezka, System.Text.Encoding.UTF8);
+                string wiersz, nazwa;
+                string[] wiersz_tab;
+                uint id = 0, liczba_sztuk;
+                double cena;
+
+                while ((wiersz = streamReader.ReadLine()) is not null)
+                {
+                    wiersz_tab = wiersz.Split(';');
+                    id = uint.Parse(wiersz_tab[0]);
+                    nazwa = wiersz_tab[1];
+                    liczba_sztuk = uint.Parse(wiersz_tab[2]);
+                    cena = double.Parse(wiersz_tab[3], System.Globalization.CultureInfo.InvariantCulture); //InvariantCulture bo bez tego postrzega program jako polski wiec oczekuje przecinka jako separatora dziesietnego
+
+                    produkty.Add(new Produkt(id, nazwa, liczba_sztuk, cena));
+                }
+                nastepne_wolne_id = id + 1;
+            }
+
+            public void dodaj_produkt(string nazwa, uint liczba_sztuk, double cena)
             {
-                //todo
+                produkty.Add(new Produkt(nastepne_wolne_id++, nazwa, liczba_sztuk, cena));
+            }
+
+            public void wykupiono(uint id, uint liczba_sztuk)
+            {
+                znajdz_po_id(id)?.zmniejsz_liczbe_sztuk(liczba_sztuk);
             }
         }
 
-        class Interfejs
+        class Koszyk : Zbior_produktow
+        {
+            public uint liczba_produktow_utraconych { get; protected set; } = 0;
+
+            public Koszyk(string sciezka, Magazyn magazyn)
+            {
+                produkty = new List<Produkt>();
+
+                if (!File.Exists(sciezka))
+                {
+                    return;
+                }
+
+                StreamReader streamReader = new StreamReader(sciezka, System.Text.Encoding.UTF8);
+                string wiersz, nazwa;
+                string[] wiersz_tab;
+                uint id = 0, liczba_sztuk;
+                double cena;
+                Produkt? rodzaj_wczytywanego_produktu;
+
+                while ((wiersz = streamReader.ReadLine()) is not null)
+                {
+                    wiersz_tab = wiersz.Split(';');
+                    id = uint.Parse(wiersz_tab[0]);
+                    liczba_sztuk = uint.Parse(wiersz_tab[1]);
+
+                    rodzaj_wczytywanego_produktu = magazyn.znajdz_po_id(id);
+                    if (rodzaj_wczytywanego_produktu is null)
+                    {
+                        liczba_produktow_utraconych++;
+                        break;
+                    }
+
+                    nazwa = rodzaj_wczytywanego_produktu.nazwa;
+                    cena = rodzaj_wczytywanego_produktu.cena;
+
+                    produkty.Add(new Produkt(id, nazwa, liczba_sztuk, cena));
+                }
+            }
+
+            public double kwota()
+            {
+                double kwota = 0;
+                foreach(Produkt produkt in produkty)
+                {
+                    kwota += produkt.cena;
+                }
+                return kwota;
+            }
+        }
+
+        static class Interfejs
         {
             static public Uzytkownik start(Lista_uzytkownikow uzytkownicy)
             {
@@ -271,7 +352,7 @@ namespace Sklep
                 Console.Write("Hasło: ");
                 haslo = Console.ReadLine();
 
-                nowy_uzytkownik = new Uzytkownik(email, haslo);
+                nowy_uzytkownik = new Klient(email, haslo);
                 uzytkownicy_zapisani.dodaj_uzytkownika(nowy_uzytkownik);
                 Console.WriteLine("Konto zostało utworzone.");
                 return nowy_uzytkownik;
@@ -285,7 +366,7 @@ namespace Sklep
                 }
                 else
                 {
-                    Koszyk koszyk = new Koszyk(sciezka_koszyki);
+                    Koszyk koszyk = new Koszyk(sciezka_koszyki_cz1 + zalogowany_uzytkownik.id + sciezka_koszyki_cz3, magazyn);
                     panel_klienta(zalogowany_uzytkownik, magazyn, koszyk);
                 }
             }
