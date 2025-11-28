@@ -1,13 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "KywLLM/cyi8=",
+  "dgSpecHash": "SBsl1ZO+Vhr9bjfucjc50Gwf76QNtMrll7jloSykjgci3kQWJpWwUFSXqtd135+UrzV19iNf1c0erVKaHwHf7A==",
   "success": true,
-  "projectFilePath": "C:\\Users\\Michał\\Documents\\GitHub\\Sklep\\Sklep\\Sklep\\Sklep.csproj",
-  "expectedPackageFiles": [
-    "C:\\Users\\Michał\\.nuget\\packages\\microsoft.windowsdesktop.app.ref\\7.0.20\\microsoft.windowsdesktop.app.ref.7.0.20.nupkg.sha512",
-    "C:\\Users\\Michał\\.nuget\\packages\\microsoft.netcore.app.ref\\7.0.20\\microsoft.netcore.app.ref.7.0.20.nupkg.sha512",
-    "C:\\Users\\Michał\\.nuget\\packages\\microsoft.aspnetcore.app.ref\\7.0.20\\microsoft.aspnetcore.app.ref.7.0.20.nupkg.sha512",
-    "C:\\Users\\Michał\\.nuget\\packages\\microsoft.netcore.app.host.win-x64\\7.0.20\\microsoft.netcore.app.host.win-x64.7.0.20.nupkg.sha512"
-  ],
+  "projectFilePath": "C:\\Users\\user\\Documents\\GitHub\\Sklep\\Sklep\\Sklep\\Sklep.csproj",
+  "expectedPackageFiles": [],
   "logs": []
 }
