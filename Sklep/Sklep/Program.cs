@@ -6,11 +6,15 @@ namespace Sklep
 {
     class Program
     {
-        const string odstep = "\n\n";
-        const string sciezka_uzytkownicy = "../../../../dane/uzytkownicy.csv";
-        const string sciezka_koszyki_cz1 = "../../../../dane/koszyk";
-        const string sciezka_koszyki_cz3 = ".csv";
-        const string sciezka_magazyn = "../../../../dane/magazyn.csv";
+        static class Sciezki
+        {
+            public const string uzytkownicy = "../../../../dane/uzytkownicy.csv";
+            public const string magazyn = "../../../../dane/magazyn.csv";
+            public static string koszyk(uint id)
+            {
+                return "../../../../dane/koszyk" + id + ".csv";
+            }
+        }
 
         abstract class Uzytkownik
         {
@@ -34,6 +38,11 @@ namespace Sklep
                 liczba_uzytkownikow++;
                 this.email = email;
                 this.haslo = haslo;
+            }
+
+            public string format_do_pliku()
+            {
+                return id + ";" + email + ";" + haslo;
             }
         }
 
@@ -79,6 +88,7 @@ namespace Sklep
                         uzytkownicy.Add(new Klient(wiersz));
                     }
                 }
+                streamReader.Close();
             }
 
             public void dodaj_uzytkownika(Uzytkownik nowy_uzytkownik)
@@ -113,6 +123,17 @@ namespace Sklep
                 }
                 return false;
             }
+
+            public void zapisz_do_pliku(string sciezka)
+            {
+                using (StreamWriter streamWriter = new StreamWriter(sciezka))
+                {
+                    foreach (Uzytkownik uzytkownik in uzytkownicy)
+                    {
+                        streamWriter.WriteLine(uzytkownik.format_do_pliku());
+                    }
+                }
+            }
         }
 
         class Produkt
@@ -143,6 +164,16 @@ namespace Sklep
                     return true;
                 }
                 return false;
+            }
+
+            public string format_do_pliku_magazyn()
+            {
+                return id + ";" + nazwa + ";" + liczba_sztuk + ";" + cena;
+            }
+
+            public string format_do_pliku_koszyk()
+            {
+                return id + ";" + liczba_sztuk;
             }
         }
 
@@ -178,6 +209,8 @@ namespace Sklep
                     }
                 }
             }
+
+            abstract public void zapisz_do_pliku(string sciezka);
         }
 
         class Magazyn : Zbior_produktow
@@ -205,10 +238,11 @@ namespace Sklep
                     id = uint.Parse(wiersz_tab[0]);
                     nazwa = wiersz_tab[1];
                     liczba_sztuk = uint.Parse(wiersz_tab[2]);
-                    cena = double.Parse(wiersz_tab[3], System.Globalization.CultureInfo.InvariantCulture); //InvariantCulture bo bez tego postrzega program jako polski wiec oczekuje przecinka jako separatora dziesietnego
+                    cena = double.Parse(wiersz_tab[3]);
 
                     produkty.Add(new Produkt(id, nazwa, liczba_sztuk, cena));
                 }
+                streamReader.Close();
                 nastepne_wolne_id = id + 1;
             }
 
@@ -220,6 +254,17 @@ namespace Sklep
             public void wykupiono(uint id, uint liczba_sztuk)
             {
                 znajdz_po_id(id)?.zmniejsz_liczbe_sztuk(liczba_sztuk);
+            }
+
+            public override void zapisz_do_pliku(string sciezka)
+            {
+                using (StreamWriter streamWriter = new StreamWriter(sciezka))
+                {
+                    foreach (Produkt produkt in produkty)
+                    {
+                        streamWriter.WriteLine(produkt.format_do_pliku_magazyn());
+                    }
+                }
             }
         }
 
@@ -239,7 +284,7 @@ namespace Sklep
                 StreamReader streamReader = new StreamReader(sciezka, System.Text.Encoding.UTF8);
                 string wiersz, nazwa;
                 string[] wiersz_tab;
-                uint id = 0, liczba_sztuk;
+                uint id, liczba_sztuk;
                 double cena;
                 Produkt? rodzaj_wczytywanego_produktu;
 
@@ -261,6 +306,7 @@ namespace Sklep
 
                     produkty.Add(new Produkt(id, nazwa, liczba_sztuk, cena));
                 }
+                streamReader.Close();
             }
 
             public double kwota()
@@ -272,10 +318,23 @@ namespace Sklep
                 }
                 return kwota;
             }
+
+            public override void zapisz_do_pliku(string sciezka)
+            {
+                using (StreamWriter streamWriter = new StreamWriter(sciezka))
+                {
+                    foreach (Produkt produkt in produkty)
+                    {
+                        streamWriter.WriteLine(produkt.format_do_pliku_koszyk());
+                    }
+                }
+            }
         }
 
         static class Interfejs
         {
+            private const string odstep = "\n\n";
+
             static public Uzytkownik start(Lista_uzytkownikow uzytkownicy)
             {
                 Console.WriteLine("APLIKACJA SKLEP - Michał Adamski i Bartosz Kurto 4P1T");
@@ -299,7 +358,7 @@ namespace Sklep
             static public Uzytkownik logowanie(Lista_uzytkownikow uzytkownicy)
             {
                 string email, haslo;
-                Uzytkownik uzytkownik;
+                Uzytkownik? uzytkownik;
 
                 while (true)
                 {
@@ -358,16 +417,18 @@ namespace Sklep
                 return nowy_uzytkownik;
             }
 
-            static public void panel_glowny(Uzytkownik zalogowany_uzytkownik, Magazyn magazyn)
+            static public Koszyk? panel_glowny(Uzytkownik zalogowany_uzytkownik, Magazyn magazyn)
             {
                 if(zalogowany_uzytkownik.id == 0)
                 {
                     panel_administratora(magazyn);
+                    return null;
                 }
                 else
                 {
-                    Koszyk koszyk = new Koszyk(sciezka_koszyki_cz1 + zalogowany_uzytkownik.id + sciezka_koszyki_cz3, magazyn);
+                    Koszyk koszyk = new Koszyk(Sciezki.koszyk(zalogowany_uzytkownik.id), magazyn);
                     panel_klienta(zalogowany_uzytkownik, magazyn, koszyk);
+                    return koszyk;
                 }
             }
 
@@ -450,14 +511,16 @@ namespace Sklep
 
         static void Main(string[] args)
         {
-            Lista_uzytkownikow uzytkownicy = new Lista_uzytkownikow(sciezka_uzytkownicy);
+            Lista_uzytkownikow uzytkownicy = new Lista_uzytkownikow(Sciezki.uzytkownicy);
             Uzytkownik zalogowany_uzytkownik;
 
             zalogowany_uzytkownik = Interfejs.start(uzytkownicy);
-            Magazyn magazyn = new Magazyn(sciezka_magazyn);
-            Interfejs.panel_glowny(zalogowany_uzytkownik, magazyn);
+            Magazyn magazyn = new Magazyn(Sciezki.magazyn);
+            Koszyk? koszyk = Interfejs.panel_glowny(zalogowany_uzytkownik, magazyn);
 
-            //todo zapisywanie danych
+            uzytkownicy?.zapisz_do_pliku(Sciezki.uzytkownicy);
+            magazyn?.zapisz_do_pliku(Sciezki.magazyn);
+            koszyk?.zapisz_do_pliku(Sciezki.koszyk(zalogowany_uzytkownik.id));
         }
     }
 }
