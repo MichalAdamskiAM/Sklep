@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Xml.Linq;
 
@@ -51,14 +52,14 @@ namespace Sklep
             public Klient(string wiersz) : base(wiersz) { }
             public Klient(string email, string haslo) : base(email, haslo) { }
 
-            //jakies tam metody zwiazane z zakupami
+            //jakies tam metody zwiazane z zakupami moze
         }
 
         class Administrator : Uzytkownik
         {
             public Administrator(string wiersz) : base(wiersz) { }
 
-            //jakies tam metody zwiazane z zarzadzaniem sklepem
+            //jakies tam metody zwiazane z zarzadzaniem sklepem moze
         }
 
         class Lista_uzytkownikow
@@ -151,12 +152,20 @@ namespace Sklep
                 this.cena = cena;
             }
 
-            public void zwieksz_liczbe_sztuk(uint o_ile)
+            public Produkt(Produkt kopiowany)
+            {
+                this.id = kopiowany.id;
+                this.nazwa = kopiowany.nazwa;
+                this.liczba_sztuk = 1;
+                this.cena = kopiowany.cena;
+            }
+
+            public void zwieksz_liczbe_sztuk(uint o_ile = 1)
             {
                 liczba_sztuk += o_ile;
             }
 
-            public bool zmniejsz_liczbe_sztuk(uint o_ile)
+            public bool zmniejsz_liczbe_sztuk(uint o_ile = 1)
             {
                 if(liczba_sztuk - o_ile >= 0)
                 {
@@ -198,16 +207,29 @@ namespace Sklep
                 return null;
             }
 
-            public void wyswietl()
+            public List<Produkt> wyswietl(string wyszukiwanie = "")
             {
                 int i = 1;
+                List<Produkt> wynik = new List<Produkt>();
                 foreach (Produkt produkt in produkty)
                 {
-                    if (produkt.liczba_sztuk > 0)
+                    if (produkt.nazwa.Contains(wyszukiwanie) && produkt.liczba_sztuk > 0)
                     {
-                        Console.WriteLine(i++ + ". " + produkt.nazwa + " - " + produkt.cena + " zł. Liczba sztuk: " + produkt.liczba_sztuk + ".");
+                        Console.WriteLine(" " + i++ + ". " + produkt.nazwa + " - " + produkt.cena + " zł. Liczba sztuk: " + produkt.liczba_sztuk + ".");
+                        wynik.Add(produkt);
                     }
                 }
+                return wynik;
+            }
+
+            public void dodaj_produkt(Produkt produkt_do_dodania)
+            {
+                produkty.Add(produkt_do_dodania);
+            }
+
+            public void czysc()
+            {
+                produkty.Clear();
             }
 
             abstract public void zapisz_do_pliku(string sciezka);
@@ -270,7 +292,7 @@ namespace Sklep
 
         class Koszyk : Zbior_produktow
         {
-            public uint liczba_produktow_utraconych { get; protected set; } = 0;
+            public uint liczba_rodzajow_utraconych { get; protected set; } = 0;
 
             public Koszyk(string sciezka, Magazyn magazyn)
             {
@@ -297,7 +319,7 @@ namespace Sklep
                     rodzaj_wczytywanego_produktu = magazyn.znajdz_po_id(id);
                     if (rodzaj_wczytywanego_produktu is null)
                     {
-                        liczba_produktow_utraconych++;
+                        liczba_rodzajow_utraconych++;
                         break;
                     }
 
@@ -331,31 +353,36 @@ namespace Sklep
             }
         }
 
-        static class Interfejs
+        class Interfejs
         {
             private const string odstep = "\n\n";
+            public Koszyk koszyk_zalogowanego { get; private set; }
+            private Magazyn magazyn;
+            public Uzytkownik zalogowany_uzytkownik { get; private set; }
 
-            static public Uzytkownik start(Lista_uzytkownikow uzytkownicy)
+            public Interfejs(Lista_uzytkownikow uzytkownicy, Magazyn magazyn)
             {
-                Console.WriteLine("APLIKACJA SKLEP - Michał Adamski i Bartosz Kurto 4P1T");
+                this.magazyn = magazyn;
+                Console.WriteLine("APLIKACJA SKLEP - Michał Adamski i Bartosz Kurto 4P1T\n");
                 string akcja;
-                while (true)
+                while (zalogowany_uzytkownik is null)
                 {
                     Console.WriteLine("Wpisz 1, aby się zalogować. Wpisz 2, aby utworzyć konto.");
                     akcja = Console.ReadLine();
 
                     if(akcja == "1")
                     {
-                        return logowanie(uzytkownicy);
+                        logowanie(uzytkownicy);
                     }
                     else if(akcja == "2")
                     {
-                        return rejestracja(uzytkownicy);
+                        rejestracja(uzytkownicy);
                     }
                 }
+                koszyk_zalogowanego = new Koszyk(Sciezki.koszyk(zalogowany_uzytkownik.id), magazyn);
             }
 
-            static public Uzytkownik logowanie(Lista_uzytkownikow uzytkownicy)
+            public void logowanie(Lista_uzytkownikow uzytkownicy)
             {
                 string email, haslo;
                 Uzytkownik? uzytkownik;
@@ -363,7 +390,7 @@ namespace Sklep
                 while (true)
                 {
                     Console.WriteLine(odstep);
-                    Console.WriteLine("LOGOWANIE");
+                    Console.WriteLine("LOGOWANIE\n");
                     Console.Write("Email: ");
                     email = Console.ReadLine();
                     Console.Write("Hasło: ");
@@ -374,22 +401,20 @@ namespace Sklep
                     if (uzytkownik is not null)
                     {
                         Console.WriteLine("Zalogowano.");
-                        return uzytkownik;
+                        zalogowany_uzytkownik = uzytkownik;
+                        return;
                     }
-                    else
-                    {
-                        Console.WriteLine("Niepoprawne dane logowania.");
-                    }
+                    Console.WriteLine("Niepoprawne dane logowania.");
                 }
             }
 
-            static public Uzytkownik rejestracja(Lista_uzytkownikow uzytkownicy_zapisani)
+            public void rejestracja(Lista_uzytkownikow uzytkownicy_zapisani)
             {
                 string email, haslo;
                 Uzytkownik nowy_uzytkownik;
 
                 Console.WriteLine(odstep);
-                Console.WriteLine("REJESTRACJA");
+                Console.WriteLine("REJESTRACJA\n");
 
                 while (true)
                 {
@@ -414,36 +439,33 @@ namespace Sklep
                 nowy_uzytkownik = new Klient(email, haslo);
                 uzytkownicy_zapisani.dodaj_uzytkownika(nowy_uzytkownik);
                 Console.WriteLine("Konto zostało utworzone.");
-                return nowy_uzytkownik;
+                zalogowany_uzytkownik = nowy_uzytkownik;
             }
 
-            static public Koszyk? panel_glowny(Uzytkownik zalogowany_uzytkownik, Magazyn magazyn)
+            public void panel_glowny()
             {
                 if(zalogowany_uzytkownik.id == 0)
                 {
-                    panel_administratora(magazyn);
-                    return null;
+                    panel_administratora();
                 }
                 else
                 {
-                    Koszyk koszyk = new Koszyk(Sciezki.koszyk(zalogowany_uzytkownik.id), magazyn);
-                    panel_klienta(zalogowany_uzytkownik, magazyn, koszyk);
-                    return koszyk;
+                    panel_klienta();
                 }
             }
 
-            static public void panel_administratora(Magazyn magazyn)
+            public void panel_administratora()
             {
                 Console.WriteLine(odstep);
-                Console.WriteLine("SKLEP - PANEL GŁÓWNY ADMINISTRATORA");
+                Console.WriteLine("SKLEP - PANEL GŁÓWNY ADMINISTRATORA\n");
                 string akcja;
                 while (true)
                 {
-                    Console.WriteLine("Wybierz akcję:\n 1. Wyświetl produkty dostępne w sklepie.\n 2. Zapisz dane i zamknij aplikację.");
+                    Console.Write("Wybierz akcję:\n 1. Wyświetl produkty dostępne w sklepie.\n 2. Zapisz dane i zamknij aplikację.\nWpisz numer akcji: ");
                     akcja = Console.ReadLine();
                     if(akcja == "1")
                     {
-                        administrator_zarzadzanie_magazynem(magazyn);
+                        administrator_zarzadzanie_magazynem();
                         return;
                     }
                     else if(akcja == "2")
@@ -454,54 +476,167 @@ namespace Sklep
                 }
             }
 
-            static public void panel_klienta(Uzytkownik zalogowany_klient, Magazyn magazyn, Koszyk koszyk)
+            public void panel_klienta()
             {
                 Console.WriteLine(odstep);
-                Console.WriteLine("SKLEP - PANEL GŁÓWNY KLIENTA");
+                Console.WriteLine("SKLEP - PANEL GŁÓWNY KLIENTA\n");
                 string akcja;
                 while (true)
                 {
-                    Console.WriteLine("Wybierz akcję:\n 1. Wyświetl produkty dostępne w sklepie.\n 2. Wyświetl swój koszyk\n 3. Zapisz dane i zamknij aplikację.");
+                    Console.Write("Wybierz akcję:\n 1. Wyświetl wszystkie produkty dostępne w sklepie.\n 2. Szukaj produktu.\n 3. Wyświetl swój koszyk/Dokonaj zakupu.\n 4. Zapisz dane i zamknij aplikację.\nWpisz numer akcji: ");
                     akcja = Console.ReadLine();
                     if (akcja == "1")
                     {
-                        klient_dostepne_produkty(magazyn);
+                        klient_dostepne_produkty();
                         return;
                     }
                     else if (akcja == "2")
                     {
-                        klient_koszyk(koszyk);
+                        Console.Write("Szukaj: ");
+                        string wyszukiwanie = Console.ReadLine();
+                        klient_dostepne_produkty(wyszukiwanie);
                         return;
                     }
                     else if (akcja == "3")
                     {
+                        klient_koszyk();
                         return;
                     }
-                    Console.WriteLine("Wprowadzono niepoprawne polecenie.");
+                    else if (akcja == "4")
+                    {
+                        return;
+                    }
+                    else
+                    {
+                        Console.WriteLine("Polecenie nierozpoznane.");
+                    }
                 }
             }
 
-            static public void klient_dostepne_produkty(Magazyn magazyn)
+            public void klient_dostepne_produkty(string wyszukiwanie = "")
             {
                 Console.WriteLine(odstep);
-                Console.WriteLine("SKLEP - DOSTĘPNE PRODUKTY");
-                Console.WriteLine("Produkty aktualnie dostępne w sklepie:");
-                magazyn.wyswietl();
-                Console.WriteLine("Wpisz numer produktu, aby dodać go do koszyka. Kliknij enter, aby wrócić do panelu głównego.");
-                //todo
+                Console.WriteLine("SKLEP - DOSTĘPNE PRODUKTY\n");
+                if(wyszukiwanie != "")
+                {
+                    Console.WriteLine("Produkty związane z " + wyszukiwanie + " dostępne aktualnie w sklepie:");
+                }
+                else
+                {
+                    Console.WriteLine("Produkty dostępne aktualnie w sklepie:");
+                }
+                List<Produkt> wyswietlone_produkty = magazyn.wyswietl(wyszukiwanie);
+
+                while (true)
+                {
+                    Console.WriteLine("\nWpisz numer produktu, aby dodać go do koszyka. Wpisz x, aby wrócić do panelu głównego.");
+                    string wprowadzony_ciag = Console.ReadLine();
+                    if (uint.TryParse(wprowadzony_ciag, out uint numer_produktu) && --numer_produktu < wyswietlone_produkty.Count())
+                    {
+                        Produkt wybrany = wyswietlone_produkty[(int)numer_produktu];
+                        Produkt? produkt_w_koszyku = koszyk_zalogowanego.znajdz_po_id(wybrany.id);
+
+                        if (produkt_w_koszyku is not null)
+                        {
+                            produkt_w_koszyku.zwieksz_liczbe_sztuk();
+                            Console.WriteLine("Produkt " + produkt_w_koszyku.nazwa + " znajdował się już w koszyku. Zwiększono liczbę sztuk w koszyku o 1. Aktualna liczba sztuk wybranego produktu: " + produkt_w_koszyku.liczba_sztuk);
+                        }
+                        else
+                        {
+                            koszyk_zalogowanego.dodaj_produkt(new Produkt(wybrany));
+                            Console.WriteLine("Dodano do koszyka produkt " + wybrany.nazwa + ".");
+                        }
+                    }
+                    else if(wprowadzony_ciag == "x")
+                    {
+                        panel_glowny();
+                        return;
+                    }
+                    else
+                    {
+                        Console.WriteLine("Polecenie nierozpoznane.");
+                    }
+                }
             }
 
-            static public void klient_koszyk(Koszyk koszyk)
+            public void klient_koszyk()
             {
                 Console.WriteLine(odstep);
-                Console.WriteLine("TWÓJ KOSZYK");
+                Console.WriteLine("TWÓJ KOSZYK\n");
                 Console.WriteLine("Produkty znajdujące się w twoim koszyku:");
-                koszyk.wyswietl();
-                Console.WriteLine("Wpisz numer produktu, aby dodać go do koszyka. Wpisz b, aby dokonać zakupu całej zawartości koszyka. Kliknij enter, aby wrócić do panelu głównego.");
-                //todo
+                List<Produkt> wyswietlone_produkty = koszyk_zalogowanego.wyswietl();
+
+                if (wyswietlone_produkty.Count() == 0)
+                {
+                    Console.WriteLine("Brak produktów do wyświetlenia.");
+                }
+                if(koszyk_zalogowanego.liczba_rodzajow_utraconych > 0)
+                {
+                    Console.WriteLine("Ukryto " + koszyk_zalogowanego.liczba_rodzajow_utraconych + " usuniętych z magazynu rodzajów produktów.\n");
+                }
+                Console.WriteLine();
+
+                while (true)
+                {
+                    if(wyswietlone_produkty.Count > 0)
+                    {
+                        Console.Write("Wpisz numer produktu, aby usunąć go z koszyka. Wpisz b, aby dokonać zakupu całej zawartości koszyka. Wpisz c, aby wyczyścić koszyk. ");
+                    }
+                    Console.WriteLine("Wpisz x, aby wrócić do panelu głównego.");
+                    string wprowadzony_ciag = Console.ReadLine();
+                    if (uint.TryParse(wprowadzony_ciag, out uint numer_produktu) && --numer_produktu < wyswietlone_produkty.Count())
+                    {
+                        Produkt wybrany_do_usuniecia = wyswietlone_produkty[(int)numer_produktu];
+                        usuwanie_produktu(wybrany_do_usuniecia);
+                    }
+                    else if (wprowadzony_ciag == "b")
+                    {
+                        //todo sprawdzenie aktualnej dostepnosci produktow (z uwzglednieniem liczb sztuk)
+
+                        Console.WriteLine("Kwota do zapłaty: " + koszyk_zalogowanego.kwota() + "zł.");
+                        Console.Write("Wprowadź kod BLIK: ");
+                        Console.ReadLine();
+                        Console.WriteLine("Transakcja zakończona pomyślnie. Dziękujemy za zakupy.");
+                        koszyk_zalogowanego.czysc();
+                        panel_glowny();
+                        return;
+                    }
+                    else if (wprowadzony_ciag == "c")
+                    {
+                        koszyk_zalogowanego.czysc();
+                        Console.WriteLine("Koszyk został wyczyszczony.");
+                        panel_glowny();
+                        return;
+                    }
+                    else if (wprowadzony_ciag == "x")
+                    {
+                        panel_glowny();
+                        return;
+                    }
+                    else
+                    {
+                        Console.WriteLine("Polecenie nierozpoznane.\n");
+                    }
+                }
             }
 
-            static public void administrator_zarzadzanie_magazynem(Magazyn magazyn)
+            private void usuwanie_produktu(Produkt produkt_do_usuniecia)
+            {
+                uint liczba_sztuk_do_usuniecia = produkt_do_usuniecia.liczba_sztuk;
+                if(produkt_do_usuniecia.liczba_sztuk > 1)
+                {
+                    Console.WriteLine("Wybrany produkt występuje w liczbie: " + produkt_do_usuniecia.liczba_sztuk + " sztuk. Kliknij enter, aby usunąć wszystkie sztuki tego produktu lub wpisz liczbę sztuk do usunięcia.");
+                    string wprowadzony_ciag = Console.ReadLine();
+                    if (uint.TryParse(wprowadzony_ciag, out uint podana_liczba) && podana_liczba <= produkt_do_usuniecia.liczba_sztuk)
+                    {
+                        liczba_sztuk_do_usuniecia = podana_liczba;
+                    }
+                }
+                produkt_do_usuniecia.zmniejsz_liczbe_sztuk(liczba_sztuk_do_usuniecia);
+                Console.WriteLine("Usunięto z koszyka " + liczba_sztuk_do_usuniecia + " sztuk produktu " + produkt_do_usuniecia.nazwa + ".");
+            }
+
+            public void administrator_zarzadzanie_magazynem()
             {
                 magazyn.wyswietl();
                 Console.WriteLine("Wpisz numer pozycji, aby edytować produkt. Kliknij enter, aby wrócić do panelu głównego.");
@@ -511,16 +646,18 @@ namespace Sklep
 
         static void Main(string[] args)
         {
+            Magazyn magazyn = new Magazyn(Sciezki.magazyn);
             Lista_uzytkownikow uzytkownicy = new Lista_uzytkownikow(Sciezki.uzytkownicy);
             Uzytkownik zalogowany_uzytkownik;
 
-            zalogowany_uzytkownik = Interfejs.start(uzytkownicy);
-            Magazyn magazyn = new Magazyn(Sciezki.magazyn);
-            Koszyk? koszyk = Interfejs.panel_glowny(zalogowany_uzytkownik, magazyn);
+            Interfejs interfejs = new Interfejs(uzytkownicy, magazyn);
+            interfejs.panel_glowny();
 
-            uzytkownicy?.zapisz_do_pliku(Sciezki.uzytkownicy);
-            magazyn?.zapisz_do_pliku(Sciezki.magazyn);
-            koszyk?.zapisz_do_pliku(Sciezki.koszyk(zalogowany_uzytkownik.id));
+            uzytkownicy.zapisz_do_pliku(Sciezki.uzytkownicy);
+            magazyn.zapisz_do_pliku(Sciezki.magazyn);
+            interfejs.koszyk_zalogowanego?.zapisz_do_pliku(Sciezki.koszyk(interfejs.zalogowany_uzytkownik.id));
+
+            Console.WriteLine("\nDane aplikacji zapisane.");
         }
     }
 }

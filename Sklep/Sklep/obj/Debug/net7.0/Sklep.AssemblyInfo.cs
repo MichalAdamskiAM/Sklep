@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Sklep")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+93b0999cfb8d61f5ca318ae6def74b6fb357b00c")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+873957b7ec2bf2899ac9f0891345e57e73d33af5")]
 [assembly: System.Reflection.AssemblyProductAttribute("Sklep")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Sklep")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
