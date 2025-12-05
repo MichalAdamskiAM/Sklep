@@ -140,9 +140,9 @@ namespace Sklep
         class Produkt
         {
             public uint id { get; }
-            public string nazwa { get; private set; }
+            public string nazwa { get; set; }
             public uint liczba_sztuk { get; private set; }
-            public double cena { get; private set; }
+            public double cena { get; set; }
 
             public Produkt(uint id, string nazwa, uint liczba_sztuk, double cena)
             {
@@ -152,11 +152,11 @@ namespace Sklep
                 this.cena = cena;
             }
 
-            public Produkt(Produkt kopiowany)
+            public Produkt(Produkt kopiowany, uint liczba_sztuk = 1)
             {
                 this.id = kopiowany.id;
                 this.nazwa = kopiowany.nazwa;
-                this.liczba_sztuk = 1;
+                this.liczba_sztuk = liczba_sztuk;
                 this.cena = kopiowany.cena;
             }
 
@@ -273,9 +273,26 @@ namespace Sklep
                 produkty.Add(new Produkt(nastepne_wolne_id++, nazwa, liczba_sztuk, cena));
             }
 
-            public void wykupiono(uint id, uint liczba_sztuk)
+            public List<Produkt> produkty_niedostepne(List<Produkt> sprawdzane_produkty)
             {
-                znajdz_po_id(id)?.zmniejsz_liczbe_sztuk(liczba_sztuk);
+                List<Produkt> wynik = new List<Produkt>();
+                foreach (Produkt sprawdzany_produkt in sprawdzane_produkty)
+                {
+                    Produkt odpowiednik_w_magazynie = this.znajdz_po_id(sprawdzany_produkt.id);
+                    if (odpowiednik_w_magazynie?.liczba_sztuk < sprawdzany_produkt.liczba_sztuk)
+                    {
+                        wynik.Add(new Produkt(sprawdzany_produkt, sprawdzany_produkt.liczba_sztuk - odpowiednik_w_magazynie.liczba_sztuk));
+                    }
+                }
+                return wynik;
+            }
+
+            public void wykupiono(List<Produkt> wykupione_produkty)
+            {
+                foreach(Produkt wykupiony_produkt in wykupione_produkty)
+                {
+                    this.znajdz_po_id(wykupiony_produkt.id)?.zmniejsz_liczbe_sztuk(wykupiony_produkt.liczba_sztuk);
+                }
             }
 
             public override void zapisz_do_pliku(string sciezka)
@@ -367,16 +384,20 @@ namespace Sklep
                 string akcja;
                 while (zalogowany_uzytkownik is null)
                 {
-                    Console.WriteLine("Wpisz 1, aby się zalogować. Wpisz 2, aby utworzyć konto.");
+                    Console.Write("Wybierz akcję:\n l - Logowanie.\n r - Utworzenie nowego konta.\nWpisz polecenie: ");
                     akcja = Console.ReadLine();
 
-                    if(akcja == "1")
+                    if(akcja == "l")
                     {
                         logowanie(uzytkownicy);
                     }
-                    else if(akcja == "2")
+                    else if(akcja == "r")
                     {
                         rejestracja(uzytkownicy);
+                    }
+                    else
+                    {
+                        Console.WriteLine("Polecenie nierozpoznane.\n");
                     }
                 }
                 koszyk_zalogowanego = new Koszyk(Sciezki.koszyk(zalogowany_uzytkownik.id), magazyn);
@@ -461,18 +482,18 @@ namespace Sklep
                 string akcja;
                 while (true)
                 {
-                    Console.Write("Wybierz akcję:\n 1. Wyświetl produkty dostępne w sklepie.\n 2. Zapisz dane i zamknij aplikację.\nWpisz numer akcji: ");
+                    Console.Write("Wybierz akcję:\n m - Wyświetl produkty dostępne w sklepie.\n x - Zapisz dane i zamknij aplikację.\nWpisz polecenie: ");
                     akcja = Console.ReadLine();
-                    if(akcja == "1")
+                    if(akcja == "m")
                     {
                         administrator_zarzadzanie_magazynem();
                         return;
                     }
-                    else if(akcja == "2")
+                    else if(akcja == "x")
                     {
                         return;
                     }
-                    Console.WriteLine("Wprowadzono niepoprawne polecenie.");
+                    Console.WriteLine("Polecenie nierozpoznane.");
                 }
             }
 
@@ -483,26 +504,26 @@ namespace Sklep
                 string akcja;
                 while (true)
                 {
-                    Console.Write("Wybierz akcję:\n 1. Wyświetl wszystkie produkty dostępne w sklepie.\n 2. Szukaj produktu.\n 3. Wyświetl swój koszyk/Dokonaj zakupu.\n 4. Zapisz dane i zamknij aplikację.\nWpisz numer akcji: ");
+                    Console.Write("Wybierz akcję:\n m - Wyświetl wszystkie produkty dostępne w sklepie.\n s - Szukaj produktu.\n k - Wyświetl swój koszyk/Dokonaj zakupu.\n x - Zapisz dane i zamknij aplikację.\nWpisz polecenie: ");
                     akcja = Console.ReadLine();
-                    if (akcja == "1")
+                    if (akcja == "m")
                     {
                         klient_dostepne_produkty();
                         return;
                     }
-                    else if (akcja == "2")
+                    else if (akcja == "s")
                     {
                         Console.Write("Szukaj: ");
                         string wyszukiwanie = Console.ReadLine();
                         klient_dostepne_produkty(wyszukiwanie);
                         return;
                     }
-                    else if (akcja == "3")
+                    else if (akcja == "k")
                     {
                         klient_koszyk();
                         return;
                     }
-                    else if (akcja == "4")
+                    else if (akcja == "x")
                     {
                         return;
                     }
@@ -519,7 +540,7 @@ namespace Sklep
                 Console.WriteLine("SKLEP - DOSTĘPNE PRODUKTY\n");
                 if(wyszukiwanie != "")
                 {
-                    Console.WriteLine("Produkty związane z " + wyszukiwanie + " dostępne aktualnie w sklepie:");
+                    Console.WriteLine("Produkty związane z ''" + wyszukiwanie + "'' dostępne aktualnie w sklepie:");
                 }
                 else
                 {
@@ -529,7 +550,7 @@ namespace Sklep
 
                 while (true)
                 {
-                    Console.WriteLine("\nWpisz numer produktu, aby dodać go do koszyka. Wpisz x, aby wrócić do panelu głównego.");
+                    Console.WriteLine("\nWybierz akcję:\n <numer produktu> - Dodaj produkt do koszyka.\n x - Powrót do panelu głównego.\nWpisz polecenie: ");
                     string wprowadzony_ciag = Console.ReadLine();
                     if (uint.TryParse(wprowadzony_ciag, out uint numer_produktu) && --numer_produktu < wyswietlone_produkty.Count())
                     {
@@ -539,7 +560,7 @@ namespace Sklep
                         if (produkt_w_koszyku is not null)
                         {
                             produkt_w_koszyku.zwieksz_liczbe_sztuk();
-                            Console.WriteLine("Produkt " + produkt_w_koszyku.nazwa + " znajdował się już w koszyku. Zwiększono liczbę sztuk w koszyku o 1. Aktualna liczba sztuk wybranego produktu: " + produkt_w_koszyku.liczba_sztuk);
+                            Console.WriteLine("Produkt " + produkt_w_koszyku.nazwa + " znajdował się już w koszyku. Zwiększono liczbę sztuk w koszyku o 1. Aktualna liczba sztuk wybranego produktu w koszyku: " + produkt_w_koszyku.liczba_sztuk + ".");
                         }
                         else
                         {
@@ -572,7 +593,7 @@ namespace Sklep
                 }
                 if(koszyk_zalogowanego.liczba_rodzajow_utraconych > 0)
                 {
-                    Console.WriteLine("Ukryto " + koszyk_zalogowanego.liczba_rodzajow_utraconych + " usuniętych z magazynu rodzajów produktów.\n");
+                    Console.WriteLine("Ukryto " + koszyk_zalogowanego.liczba_rodzajow_utraconych + " usuniętych z magazynu rodzajów produktów.");
                 }
                 Console.WriteLine();
 
@@ -580,20 +601,25 @@ namespace Sklep
                 {
                     if(wyswietlone_produkty.Count > 0)
                     {
-                        Console.Write("Wpisz numer produktu, aby usunąć go z koszyka. Wpisz b, aby dokonać zakupu całej zawartości koszyka. Wpisz c, aby wyczyścić koszyk. ");
+                        Console.Write("Wybierz akcję:\n <numer produktu> - Usuń produkt z koszyka.\n z - Zakup całej zawartości koszyka.\n c - Usunięcie całej zawartości koszyka\n x - Powrót do panelu głównego.\nWpisz polecenie: ");
                     }
-                    Console.WriteLine("Wpisz x, aby wrócić do panelu głównego.");
+                    else
+                    {
+                        Console.Write("Wybierz akcję:\n x - Powrót do panelu głównego.\nWpisz polecenie: ");
+                    }
                     string wprowadzony_ciag = Console.ReadLine();
                     if (uint.TryParse(wprowadzony_ciag, out uint numer_produktu) && --numer_produktu < wyswietlone_produkty.Count())
                     {
                         Produkt wybrany_do_usuniecia = wyswietlone_produkty[(int)numer_produktu];
                         usuwanie_produktu(wybrany_do_usuniecia);
                     }
-                    else if (wprowadzony_ciag == "b")
+                    else if (wprowadzony_ciag == "z")
                     {
-                        //todo sprawdzenie aktualnej dostepnosci produktow (z uwzglednieniem liczb sztuk)
+                        //todo sprawdzenie aktualnej dostepnosci produktow (z uwzglednieniem liczb sztuk) no i potem zmiana liczby sztuk w magazynie po zakupie
 
-                        Console.WriteLine("Kwota do zapłaty: " + koszyk_zalogowanego.kwota() + "zł.");
+
+
+                        Console.WriteLine("Kwota do zapłaty: " + koszyk_zalogowanego.kwota() + " zł.");
                         Console.Write("Wprowadź kod BLIK: ");
                         Console.ReadLine();
                         Console.WriteLine("Transakcja zakończona pomyślnie. Dziękujemy za zakupy.");
@@ -638,9 +664,151 @@ namespace Sklep
 
             public void administrator_zarzadzanie_magazynem()
             {
-                magazyn.wyswietl();
-                Console.WriteLine("Wpisz numer pozycji, aby edytować produkt. Kliknij enter, aby wrócić do panelu głównego.");
-                //todo
+                Console.WriteLine(odstep);
+                Console.WriteLine("SKLEP - MAGAZYN\n");
+                Console.WriteLine("Produkty dostępne aktualnie w sklepie:");
+                List<Produkt> wyswietlone_produkty = magazyn.wyswietl();
+                Console.WriteLine();
+
+                while (true)
+                {
+                    Console.Write("\nWybierz akcję:\n <numer produktu> - Edytuj produkt.\n + - Dodaj nowy produkt.\n x - Powrót do panelu głównego.\nWpisz polecenie: ");
+                    string wprowadzony_ciag = Console.ReadLine();
+                    if (uint.TryParse(wprowadzony_ciag, out uint numer_produktu) && --numer_produktu < wyswietlone_produkty.Count())
+                    {
+                        Produkt wybrany = wyswietlone_produkty[(int)numer_produktu];
+                        edytuj_produkt(wybrany);
+                        return;
+                    }
+                    else if (wprowadzony_ciag == "+")
+                    {
+                        dodawanie_produktu();
+                        return;
+                    }
+                    else if (wprowadzony_ciag == "x")
+                    {
+                        panel_glowny();
+                        return;
+                    }
+                    else
+                    {
+                        Console.WriteLine("Polecenie nierozpoznane.");
+                    }
+                }
+            }
+
+            private void edytuj_produkt(Produkt edytowany_produkt)
+            {
+                Console.WriteLine(odstep);
+                Console.WriteLine("EDYCJA PRODUKTU " + edytowany_produkt.nazwa);
+
+                while (true)
+                {
+                    Console.WriteLine("\nWybierz akcję:\n n - Zmień nazwę produktu.\n + - Zwiększ liczbę sztuk w magazynie.\n c - Zmień cenę produktu.\n x - Powrót do magazynu.\nWpisz polecenie: ");
+                    string wprowadzony_ciag = Console.ReadLine();
+
+                    if (wprowadzony_ciag == "n")
+                    {
+                        Console.Write("Podaj nową nazwę produktu: ");
+                        edytowany_produkt.nazwa = Console.ReadLine();
+                        Console.WriteLine("Nazwa produktu zmieniona.");
+                        administrator_zarzadzanie_magazynem();
+                        return;
+                    }
+                    if (wprowadzony_ciag == "+")
+                    {
+                        string wprowadzony_ciag_liczba;
+                        while (true)
+                        {
+                            Console.Write("Podaj liczbę sztuk dodanych do magazynu: ");
+                            wprowadzony_ciag_liczba = Console.ReadLine();
+                            if (uint.TryParse(wprowadzony_ciag_liczba, out uint poprawna_liczba))
+                            {
+                                edytowany_produkt.zwieksz_liczbe_sztuk(poprawna_liczba);
+                                Console.WriteLine("Liczba sztuk zmieniona.");
+                                administrator_zarzadzanie_magazynem();
+                                return;
+                            }
+                            else
+                            {
+                                Console.WriteLine("Niepoprawna liczba sztuk.");
+                            }
+                        }
+                    }
+                    if (wprowadzony_ciag == "c")
+                    {
+                        string wprowadzony_ciag_cena;
+                        while (true)
+                        {
+                            Console.Write("Podaj nową cenę: ");
+                            wprowadzony_ciag_cena = Console.ReadLine();
+                            if (double.TryParse(wprowadzony_ciag_cena, out double poprawna_cena))
+                            {
+                                edytowany_produkt.cena = poprawna_cena;
+                                Console.WriteLine("Cena zmieniona.");
+                                administrator_zarzadzanie_magazynem();
+                                return;
+                            }
+                            else
+                            {
+                                Console.WriteLine("Niepoprawna cena.");
+                            }
+                        }
+                    }
+                    else if (wprowadzony_ciag == "x")
+                    {
+                        administrator_zarzadzanie_magazynem();
+                        return;
+                    }
+                    else
+                    {
+                        Console.WriteLine("Polecenie nierozpoznane.");
+                    }
+                }
+            }
+
+            private void dodawanie_produktu()
+            {
+                string nazwa, wprowadzony_ciag;
+                uint liczba_sztuk;
+                double cena;
+
+                Console.WriteLine(odstep);
+                Console.WriteLine("DODAWANIE NOWEGO PRODUKTU");
+
+                Console.Write("Nazwa: ");
+                nazwa = Console.ReadLine();
+
+                while (true)
+                {
+                    Console.Write("Liczba sztuk: ");
+                    wprowadzony_ciag = Console.ReadLine();
+                    if (uint.TryParse(wprowadzony_ciag, out liczba_sztuk))
+                    {
+                        break;
+                    }
+                    else
+                    {
+                        Console.WriteLine("Niepoprawna liczba sztuk.");
+                    }
+                }
+
+                while (true)
+                {
+                    Console.Write("Cena: ");
+                    wprowadzony_ciag = Console.ReadLine();
+                    if (double.TryParse(wprowadzony_ciag, out cena)) //UWAGA separatorem dziesietnym jest przecinek, nie kropka
+                    {
+                        break;
+                    }
+                    else
+                    {
+                        Console.WriteLine("Niepoprawna cena.");
+                    }
+                }
+
+                magazyn.dodaj_produkt(nazwa, liczba_sztuk, cena);
+                administrator_zarzadzanie_magazynem();
             }
         }
 
