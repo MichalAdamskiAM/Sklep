@@ -207,13 +207,13 @@ namespace Sklep
                 return null;
             }
 
-            public List<Produkt> wyswietl(string wyszukiwanie = "")
+            public List<Produkt> wyswietl(string wyszukiwanie = "", bool pokaz_0_sztuk = false)
             {
                 int i = 1;
                 List<Produkt> wynik = new List<Produkt>();
                 foreach (Produkt produkt in produkty)
                 {
-                    if (produkt.nazwa.Contains(wyszukiwanie) && produkt.liczba_sztuk > 0)
+                    if (produkt.nazwa.Contains(wyszukiwanie) && (produkt.liczba_sztuk > 0 || pokaz_0_sztuk))
                     {
                         Console.WriteLine(" " + i++ + ". " + produkt.nazwa + " - " + produkt.cena + " zł. Liczba sztuk: " + produkt.liczba_sztuk + ".");
                         wynik.Add(produkt);
@@ -547,10 +547,14 @@ namespace Sklep
                     Console.WriteLine("Produkty dostępne aktualnie w sklepie:");
                 }
                 List<Produkt> wyswietlone_produkty = magazyn.wyswietl(wyszukiwanie);
+                if (wyswietlone_produkty.Count() == 0)
+                {
+                    Console.WriteLine("Brak produktów do wyświetlenia.");
+                }
 
                 while (true)
                 {
-                    Console.WriteLine("\nWybierz akcję:\n <numer produktu> - Dodaj produkt do koszyka.\n x - Powrót do panelu głównego.\nWpisz polecenie: ");
+                    Console.Write("\nWybierz akcję:\n <numer produktu> - Dodaj produkt do koszyka.\n x - Powrót do panelu głównego.\nWpisz polecenie: ");
                     string wprowadzony_ciag = Console.ReadLine();
                     if (uint.TryParse(wprowadzony_ciag, out uint numer_produktu) && --numer_produktu < wyswietlone_produkty.Count())
                     {
@@ -662,12 +666,19 @@ namespace Sklep
                 Console.WriteLine("Usunięto z koszyka " + liczba_sztuk_do_usuniecia + " sztuk produktu " + produkt_do_usuniecia.nazwa + ".");
             }
 
-            public void administrator_zarzadzanie_magazynem()
+            public void administrator_zarzadzanie_magazynem(string wyszukiwanie = "")
             {
                 Console.WriteLine(odstep);
                 Console.WriteLine("SKLEP - MAGAZYN\n");
-                Console.WriteLine("Produkty dostępne aktualnie w sklepie:");
-                List<Produkt> wyswietlone_produkty = magazyn.wyswietl();
+                if (wyszukiwanie != "")
+                {
+                    Console.WriteLine("Produkty związane z ''" + wyszukiwanie + "'' dostępne aktualnie w sklepie:");
+                }
+                else
+                {
+                    Console.WriteLine("Produkty dostępne aktualnie w sklepie:");
+                }
+                List<Produkt> wyswietlone_produkty = magazyn.wyswietl(wyszukiwanie, true);
                 Console.WriteLine();
 
                 while (true)
@@ -704,7 +715,7 @@ namespace Sklep
 
                 while (true)
                 {
-                    Console.WriteLine("\nWybierz akcję:\n n - Zmień nazwę produktu.\n + - Zwiększ liczbę sztuk w magazynie.\n c - Zmień cenę produktu.\n x - Powrót do magazynu.\nWpisz polecenie: ");
+                    Console.Write("\nWybierz akcję:\n n - Zmień nazwę produktu.\n + - Zwiększ liczbę sztuk w magazynie.\n c - Zmień cenę produktu.\n x - Powrót do magazynu.\nWpisz polecenie: ");
                     string wprowadzony_ciag = Console.ReadLine();
 
                     if (wprowadzony_ciag == "n")
@@ -774,7 +785,7 @@ namespace Sklep
                 double cena;
 
                 Console.WriteLine(odstep);
-                Console.WriteLine("DODAWANIE NOWEGO PRODUKTU");
+                Console.WriteLine("DODAWANIE NOWEGO PRODUKTU\n");
 
                 Console.Write("Nazwa: ");
                 nazwa = Console.ReadLine();
