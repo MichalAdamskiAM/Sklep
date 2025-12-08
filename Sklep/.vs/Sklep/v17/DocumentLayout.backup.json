@@ -54,7 +54,8 @@
               "RelativeToolTip": "dane\\koszyk1.csv",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAIAAAADAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.002120|",
-              "WhenOpened": "2025-11-27T17:15:25.106Z"
+              "WhenOpened": "2025-11-27T17:15:25.106Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
@@ -64,9 +65,10 @@
               "RelativeDocumentMoniker": "dane\\magazyn.csv",
               "ToolTip": "C:\\Users\\Micha\u0142\\Documents\\GitHub\\Sklep\\Sklep\\dane\\magazyn.csv",
               "RelativeToolTip": "dane\\magazyn.csv",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAkAAABWAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAiAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.002120|",
-              "WhenOpened": "2025-11-27T16:31:08.482Z"
+              "WhenOpened": "2025-11-27T16:31:08.482Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
@@ -78,7 +80,8 @@
               "RelativeToolTip": "dane\\uzytkownicy.csv",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAEAAAAXAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.002120|",
-              "WhenOpened": "2025-11-20T15:12:16.149Z"
+              "WhenOpened": "2025-11-20T15:12:16.149Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
@@ -88,7 +91,7 @@
               "RelativeDocumentMoniker": "Sklep\\Program.cs",
               "ToolTip": "C:\\Users\\Micha\u0142\\Documents\\GitHub\\Sklep\\Sklep\\Sklep\\Program.cs",
               "RelativeToolTip": "Sklep\\Program.cs",
-              "ViewState": "AgIAABUCAAAAAAAAAAAkwCgCAAARAAAAAAAAAA==",
+              "ViewState": "AgIAAMcCAAAAAAAAAAAcwOQCAAAnAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-10-03T08:25:50.295Z",
               "EditorCaption": ""

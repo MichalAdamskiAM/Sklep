@@ -7,6 +7,20 @@ namespace Sklep
 {
     class Program
     {
+        static class Tekst
+        {
+            static public string rozsun(string cz1, string cz2)
+            {
+                int liczba = 100 - cz1.Length - cz2.Length;
+                string odstep = "";
+                for (int i = 0; i < liczba; i++)
+                {
+                    odstep += ' ';
+                }
+                return cz1 + odstep + cz2;
+            }
+        }
+
         static class Sciezki
         {
             public const string uzytkownicy = "../../../../dane/uzytkownicy.csv";
@@ -165,14 +179,16 @@ namespace Sklep
                 liczba_sztuk += o_ile;
             }
 
-            public bool zmniejsz_liczbe_sztuk(uint o_ile = 1)
+            public void zmniejsz_liczbe_sztuk(uint o_ile = 1)
             {
-                if(liczba_sztuk - o_ile >= 0)
+                if (liczba_sztuk - o_ile >= 0)
                 {
                     liczba_sztuk -= o_ile;
-                    return true;
                 }
-                return false;
+                else
+                {
+                    liczba_sztuk = 0;
+                }
             }
 
             public string format_do_pliku_magazyn()
@@ -186,13 +202,18 @@ namespace Sklep
             }
         }
 
-        abstract class Zbior_produktow
+        class Zbior_produktow
         {
-            protected List<Produkt> produkty;
+            public List<Produkt> produkty { get; protected set; }
 
             public Zbior_produktow()
             {
                 produkty = new List<Produkt>();
+            }
+
+            public Zbior_produktow(List<Produkt> produkty)
+            {
+                this.produkty = produkty;
             }
 
             public Produkt? znajdz_po_id(uint id)
@@ -222,6 +243,22 @@ namespace Sklep
                 return wynik;
             }
 
+            public string podsumowanie_zakupu()
+            {
+                string wynik = "";
+                string cz1, cz2;
+                foreach(Produkt produkt in produkty)
+                {
+                    if(produkt.liczba_sztuk != 0)
+                    {
+                        cz1 = " " + produkt.nazwa + " " + produkt.liczba_sztuk + "*" + produkt.cena;
+                        cz2 = produkt.liczba_sztuk * produkt.cena + "\n";
+                        wynik += Tekst.rozsun(cz1, cz2);
+                    }                    
+                }
+                return wynik;
+            }
+
             public void dodaj_produkt(Produkt produkt_do_dodania)
             {
                 produkty.Add(produkt_do_dodania);
@@ -232,7 +269,23 @@ namespace Sklep
                 produkty.Clear();
             }
 
-            abstract public void zapisz_do_pliku(string sciezka);
+            public void wykupiono(List<Produkt> wykupione_produkty)
+            {
+                foreach (Produkt wykupiony_produkt in wykupione_produkty)
+                {
+                    this.znajdz_po_id(wykupiony_produkt.id)?.zmniejsz_liczbe_sztuk(wykupiony_produkt.liczba_sztuk);
+                }
+            }
+
+            public double kwota()
+            {
+                double kwota = 0;
+                foreach (Produkt produkt in produkty)
+                {
+                    kwota += produkt.cena * produkt.liczba_sztuk;
+                }
+                return kwota;
+            }
         }
 
         class Magazyn : Zbior_produktow
@@ -287,15 +340,25 @@ namespace Sklep
                 return wynik;
             }
 
-            public void wykupiono(List<Produkt> wykupione_produkty)
+            public List<Produkt> produkty_dostepne(List<Produkt> sprawdzane_produkty)
             {
-                foreach(Produkt wykupiony_produkt in wykupione_produkty)
+                List<Produkt> wynik = new List<Produkt>();
+                foreach (Produkt sprawdzany_produkt in sprawdzane_produkty)
                 {
-                    this.znajdz_po_id(wykupiony_produkt.id)?.zmniejsz_liczbe_sztuk(wykupiony_produkt.liczba_sztuk);
+                    Produkt odpowiednik_w_magazynie = this.znajdz_po_id(sprawdzany_produkt.id);
+                    if (odpowiednik_w_magazynie?.liczba_sztuk < sprawdzany_produkt.liczba_sztuk)
+                    {
+                        wynik.Add(new Produkt(sprawdzany_produkt, odpowiednik_w_magazynie.liczba_sztuk));
+                    }
+                    else
+                    {
+                        wynik.Add(new Produkt(sprawdzany_produkt, sprawdzany_produkt.liczba_sztuk));
+                    }
                 }
+                return wynik;
             }
 
-            public override void zapisz_do_pliku(string sciezka)
+            public void zapisz_do_pliku(string sciezka)
             {
                 using (StreamWriter streamWriter = new StreamWriter(sciezka))
                 {
@@ -348,17 +411,7 @@ namespace Sklep
                 streamReader.Close();
             }
 
-            public double kwota()
-            {
-                double kwota = 0;
-                foreach(Produkt produkt in produkty)
-                {
-                    kwota += produkt.cena;
-                }
-                return kwota;
-            }
-
-            public override void zapisz_do_pliku(string sciezka)
+            public void zapisz_do_pliku(string sciezka)
             {
                 using (StreamWriter streamWriter = new StreamWriter(sciezka))
                 {
@@ -554,22 +607,43 @@ namespace Sklep
 
                 while (true)
                 {
-                    Console.Write("\nWybierz akcję:\n <numer produktu> - Dodaj produkt do koszyka.\n x - Powrót do panelu głównego.\nWpisz polecenie: ");
+                    Console.Write("\nWybierz akcję:\n <numer produktu> - Dodaj produkt do koszyka (po spacji dopisz liczbę sztuk, aby dodać więcej niż jedną sztukę).\n x - Powrót do panelu głównego.\nWpisz polecenie: ");
                     string wprowadzony_ciag = Console.ReadLine();
-                    if (uint.TryParse(wprowadzony_ciag, out uint numer_produktu) && --numer_produktu < wyswietlone_produkty.Count())
+                    int lokalizacja_separatora = wprowadzony_ciag.IndexOf(' ');
+                    if(lokalizacja_separatora == -1)
+                    {
+                        lokalizacja_separatora = wprowadzony_ciag.Length;
+                    }
+                    string mozliwy_numer = wprowadzony_ciag[..lokalizacja_separatora];
+                    if (uint.TryParse(mozliwy_numer, out uint numer_produktu) && --numer_produktu < wyswietlone_produkty.Count())
                     {
                         Produkt wybrany = wyswietlone_produkty[(int)numer_produktu];
                         Produkt? produkt_w_koszyku = koszyk_zalogowanego.znajdz_po_id(wybrany.id);
 
+                        if (!uint.TryParse(wprowadzony_ciag[lokalizacja_separatora..], out uint liczba_sztuk_do_dodania))
+                        {
+                            liczba_sztuk_do_dodania = 1;
+                        }
+
+                        //Brak zabezpieczenia przed dodaniem do koszyka liczby sztuk przekraczajacej liczbe sztuk w magazynie jest zamierzony, gdyz uzytkownik moze planowac zakupic wiecej sztuk i czekac na ich dodanie do magazynu, aby wtedy dokonać zakupu. Proba zakupu zbyt duzej liczby sztuk zostanie udaremniona przez funkcje klient_koszyk()
+
                         if (produkt_w_koszyku is not null)
                         {
-                            produkt_w_koszyku.zwieksz_liczbe_sztuk();
-                            Console.WriteLine("Produkt " + produkt_w_koszyku.nazwa + " znajdował się już w koszyku. Zwiększono liczbę sztuk w koszyku o 1. Aktualna liczba sztuk wybranego produktu w koszyku: " + produkt_w_koszyku.liczba_sztuk + ".");
+                            produkt_w_koszyku.zwieksz_liczbe_sztuk(liczba_sztuk_do_dodania);
                         }
                         else
                         {
                             koszyk_zalogowanego.dodaj_produkt(new Produkt(wybrany));
-                            Console.WriteLine("Dodano do koszyka produkt " + wybrany.nazwa + ".");
+                            produkt_w_koszyku = koszyk_zalogowanego.znajdz_po_id(wybrany.id);
+                        }
+
+                        if(produkt_w_koszyku.liczba_sztuk > liczba_sztuk_do_dodania)
+                        {
+                            Console.WriteLine("Produkt " + produkt_w_koszyku.nazwa + " znajdował się już w koszyku. Zwiększono liczbę sztuk w koszyku o " + liczba_sztuk_do_dodania + ". Aktualna liczba sztuk wybranego produktu w koszyku: " + produkt_w_koszyku.liczba_sztuk + ".");
+                        }
+                        else
+                        {
+                            Console.WriteLine("Dodano do koszyka " + liczba_sztuk_do_dodania + " sztuk produktu " + wybrany.nazwa + ".");
                         }
                     }
                     else if(wprowadzony_ciag == "x")
@@ -616,18 +690,54 @@ namespace Sklep
                     {
                         Produkt wybrany_do_usuniecia = wyswietlone_produkty[(int)numer_produktu];
                         usuwanie_produktu(wybrany_do_usuniecia);
+                        return;
                     }
                     else if (wprowadzony_ciag == "z")
                     {
-                        //todo sprawdzenie aktualnej dostepnosci produktow (z uwzglednieniem liczb sztuk) no i potem zmiana liczby sztuk w magazynie po zakupie
+                        Zbior_produktow produkty_niedostepne = new Zbior_produktow(magazyn.produkty_niedostepne(koszyk_zalogowanego.produkty));
+                        if(produkty_niedostepne.produkty.Count() > 0)
+                        {
+                            Console.WriteLine("\nPoniższe produkty z twojego koszyka są aktualnie niedostępne.");
+                            produkty_niedostepne.wyswietl();
 
+                            while (true)
+                            {
+                                Console.Write("\nWybierz akcję:\n z - Zakup dostępnych produktów.\n x - Powrót do panelu głównego.\nWpisz polecenie: ");
+                                string akcja = Console.ReadLine();
+                                if (akcja == "z")
+                                {
+                                    break;
+                                }
+                                else if (akcja == "x")
+                                {
+                                    panel_glowny();
+                                    return;
+                                }
+                                else
+                                {
+                                    Console.WriteLine("Polecenie nierozpoznane.");
+                                }
+                            }
+                        }
 
-
-                        Console.WriteLine("Kwota do zapłaty: " + koszyk_zalogowanego.kwota() + " zł.");
-                        Console.Write("Wprowadź kod BLIK: ");
-                        Console.ReadLine();
-                        Console.WriteLine("Transakcja zakończona pomyślnie. Dziękujemy za zakupy.");
-                        koszyk_zalogowanego.czysc();
+                        Zbior_produktow kupowane_produkty = new Zbior_produktow(magazyn.produkty_dostepne(koszyk_zalogowanego.produkty));
+                        Console.WriteLine("\nPodsumowanie zakupu:");
+                        string podsumowanie_zakupu = kupowane_produkty.podsumowanie_zakupu();
+                        if(podsumowanie_zakupu != "")
+                        {
+                            Console.Write(podsumowanie_zakupu);
+                            Console.Write(" --------------------------------------------------------------------------------------------------");
+                            Console.WriteLine(Tekst.rozsun("\n Kwota do zapłaty (PLN): ", kupowane_produkty.kwota().ToString()));
+                            Console.Write("\nWprowadź kod BLIK: ");
+                            Console.ReadLine();
+                            Console.WriteLine("Transakcja zakończona pomyślnie. Dziękujemy za zakupy.");
+                            magazyn.wykupiono(kupowane_produkty.produkty);
+                            koszyk_zalogowanego.wykupiono(kupowane_produkty.produkty);
+                        }
+                        else
+                        {
+                            Console.WriteLine("Brak produktów do zakupienia. Wybierz produkty z dostępnych w sklepie.");
+                        }
                         panel_glowny();
                         return;
                     }
@@ -655,7 +765,7 @@ namespace Sklep
                 uint liczba_sztuk_do_usuniecia = produkt_do_usuniecia.liczba_sztuk;
                 if(produkt_do_usuniecia.liczba_sztuk > 1)
                 {
-                    Console.WriteLine("Wybrany produkt występuje w liczbie: " + produkt_do_usuniecia.liczba_sztuk + " sztuk. Kliknij enter, aby usunąć wszystkie sztuki tego produktu lub wpisz liczbę sztuk do usunięcia.");
+                    Console.Write("Wybrany produkt występuje w liczbie: " + produkt_do_usuniecia.liczba_sztuk + " sztuk.\nWybierz akcję:\n Kliknij enter, aby usunąć wszystkie sztuki tego produktu\n Wpisz liczbę sztuk do usunięcia.\nWpisz polecenie:");
                     string wprowadzony_ciag = Console.ReadLine();
                     if (uint.TryParse(wprowadzony_ciag, out uint podana_liczba) && podana_liczba <= produkt_do_usuniecia.liczba_sztuk)
                     {
@@ -663,7 +773,9 @@ namespace Sklep
                     }
                 }
                 produkt_do_usuniecia.zmniejsz_liczbe_sztuk(liczba_sztuk_do_usuniecia);
-                Console.WriteLine("Usunięto z koszyka " + liczba_sztuk_do_usuniecia + " sztuk produktu " + produkt_do_usuniecia.nazwa + ".");
+                Console.WriteLine("Usunięto z koszyka " + liczba_sztuk_do_usuniecia + " sztuk produktu " + produkt_do_usuniecia.nazwa + ". W koszyku pozostało " + produkt_do_usuniecia.liczba_sztuk + " sztuk tego produktu.");
+                klient_koszyk();
+                return;
             }
 
             public void administrator_zarzadzanie_magazynem(string wyszukiwanie = "")
