@@ -443,7 +443,10 @@ namespace Sklep
                         rejestracja(uzytkownicy);
                     })
                 );
-                zbior_akcji.wybor_uzytkownika();
+                while(zalogowany_uzytkownik is null)
+                {
+                    zbior_akcji.uzytkownik_wybiera(false);
+                }
                 koszyk_zalogowanego = new Koszyk(Sciezki.koszyk(zalogowany_uzytkownik!.id), magazyn);
             }
 
@@ -536,7 +539,7 @@ namespace Sklep
                         return;
                     })
                 );
-                zbior_akcji.wybor_uzytkownika();
+                zbior_akcji.uzytkownik_wybiera();
             }
 
             private void panel_klienta()
@@ -568,7 +571,7 @@ namespace Sklep
                         return;
                     })
                 );
-                zbior_akcji.wybor_uzytkownika();
+                zbior_akcji.uzytkownik_wybiera();
             }
 
             private void klient_dostepne_produkty(string wyszukiwanie = "")
@@ -654,7 +657,7 @@ namespace Sklep
                         return;
                     })
                 );
-                zbior_akcji.wybor_uzytkownika();
+                zbior_akcji.uzytkownik_wybiera();
             }
 
             private void klient_koszyk()
@@ -763,7 +766,7 @@ namespace Sklep
                         return;
                     })
                 );
-                zbior_akcji.wybor_uzytkownika();
+                zbior_akcji.uzytkownik_wybiera();
             }
 
             private void usuwanie_produktu(Produkt produkt_do_usuniecia)
@@ -830,7 +833,7 @@ namespace Sklep
                         return;
                     })
                 );
-                zbior_akcji.wybor_uzytkownika();
+                zbior_akcji.uzytkownik_wybiera();
             }
 
             private void edytuj_produkt(Produkt edytowany_produkt)
@@ -889,7 +892,7 @@ namespace Sklep
                         }
                     })
                 );
-                zbior_akcji.wybor_uzytkownika();
+                zbior_akcji.uzytkownik_wybiera();
             }
 
             private void dodawanie_produktu()
@@ -986,9 +989,9 @@ namespace Sklep
                     return null;
                 }
 
-                public void wybor_uzytkownika()
+                public void uzytkownik_wybiera(bool powtarzaj = true)
                 {
-                    while (true)
+                    do
                     {
                         Console.WriteLine("\nWybierz akcję:");
                         foreach (Akcja akcja in akcje)
@@ -1000,7 +1003,7 @@ namespace Sklep
 
                         Action czynnosci_do_wykonania = znajdz_po_poleceniu(wprowadzony_ciag)?.czynnosci ?? domyslne_czynnosci;
                         czynnosci_do_wykonania();
-                    }
+                    } while (powtarzaj);
                 }
             }
         }
