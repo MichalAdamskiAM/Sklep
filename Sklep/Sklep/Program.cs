@@ -137,6 +137,12 @@ namespace Sklep
 
             public void zapisz_do_pliku(string sciezka)
             {
+                string? folder = Path.GetDirectoryName(sciezka);
+                if (folder is not null)
+                {
+                    Directory.CreateDirectory(folder);
+                }
+
                 using (StreamWriter zapis = new StreamWriter(sciezka))
                 {
                     foreach (Uzytkownik uzytkownik in uzytkownicy)
@@ -357,6 +363,12 @@ namespace Sklep
 
             public void zapisz_do_pliku(string sciezka)
             {
+                string? folder = Path.GetDirectoryName(sciezka);
+                if (folder is not null)
+                {
+                    Directory.CreateDirectory(folder);
+                }
+
                 using (StreamWriter zapis = new StreamWriter(sciezka))
                 {
                     foreach (Produkt produkt in produkty)
@@ -411,6 +423,12 @@ namespace Sklep
 
             public void zapisz_do_pliku(string sciezka)
             {
+                string? folder = Path.GetDirectoryName(sciezka);
+                if (folder is not null)
+                {
+                    Directory.CreateDirectory(folder);
+                }
+
                 using (StreamWriter zapis = new StreamWriter(sciezka))
                 {
                     foreach (Produkt produkt in produkty)
@@ -529,15 +547,14 @@ namespace Sklep
 
                 Zbior_akcji zbior_akcji = new Zbior_akcji();
                 zbior_akcji.dodaj_akcje(
-                    new Akcja("m", "Wyświetl produkty dostępne w sklepie.", () =>
+                    new Akcja("m", "Wyświetl produkty dostępne w sklepie.", () => administrator_zarzadzanie_magazynem()),
+                    new Akcja("s", "Szukaj produktu.", () =>
                     {
-                        administrator_zarzadzanie_magazynem();
-                        return;
+                        Console.Write("Szukaj: ");
+                        string wyszukiwanie = Console.ReadLine()!;
+                        administrator_zarzadzanie_magazynem(wyszukiwanie);
                     }),
-                    new Akcja("x", "Zapisz dane i zamknij aplikację.", () =>
-                    {
-                        return;
-                    })
+                    new Akcja("x", "Zapisz dane i zamknij aplikację.", null)
                 );
                 zbior_akcji.uzytkownik_wybiera();
             }
@@ -549,27 +566,15 @@ namespace Sklep
 
                 Zbior_akcji zbior_akcji = new Zbior_akcji();
                 zbior_akcji.dodaj_akcje(
-                    new Akcja("m", "Wyświetl wszystkie produkty dostępne w sklepie.", () =>
-                    {
-                        klient_dostepne_produkty();
-                        return;
-                    }),
+                    new Akcja("m", "Wyświetl wszystkie produkty dostępne w sklepie.", () => klient_dostepne_produkty()),
                     new Akcja("s", "Szukaj produktu.", () =>
                     {
                         Console.Write("Szukaj: ");
                         string wyszukiwanie = Console.ReadLine()!;
                         klient_dostepne_produkty(wyszukiwanie);
-                        return;
                     }),
-                    new Akcja("k", "Wyświetl swój koszyk/Dokonaj zakupu.", () =>
-                    {
-                        klient_koszyk();
-                        return;
-                    }),
-                    new Akcja("x", "Zapisz dane i zamknij aplikację.", () =>
-                    {
-                        return;
-                    })
+                    new Akcja("k", "Wyświetl swój koszyk/Dokonaj zakupu.", klient_koszyk),
+                    new Akcja("x", "Zapisz dane i zamknij aplikację.", null)
                 );
                 zbior_akcji.uzytkownik_wybiera();
             }
@@ -619,12 +624,9 @@ namespace Sklep
                         {
                             Console.WriteLine("Dodano do koszyka " + liczba_sztuk_do_dodania + " sztuk produktu " + wybrany.nazwa + ".");
                         }
+                        klient_dostepne_produkty();
                     }),
-                    new Akcja("x", "Powrót do panelu głównego.", () =>
-                    {
-                        panel_glowny();
-                        return;
-                    })
+                    new Akcja("x", "Powrót do panelu głównego.", panel_glowny)
                 );
                 zbior_akcji.uzytkownik_wybiera();
             }
@@ -651,12 +653,11 @@ namespace Sklep
                 if(wyswietlone_produkty.Count > 0)
                 {
                     zbior_akcji.dodaj_akcje(
-                        new Akcja("u", "Usuń produkt z koszyka.", () =>
+                        new Akcja("u", "Usunięcie produktu z koszyka.", () =>
                         {
                             uint numer_produktu = wczytaj_uint("Numer produktu", (uint)wyswietlone_produkty.Count) - 1;
                             Produkt wybrany = wyswietlone_produkty[(int)numer_produktu];
                             usuwanie_produktu(wybrany);
-                            return;
                         }),
                         new Akcja("z", "Zakup całej zawartości koszyka.", () =>
                         {
@@ -696,7 +697,9 @@ namespace Sklep
                                 Console.WriteLine(Tekst.rozsun("\n Kwota do zapłaty (PLN): ", kupowane_produkty.kwota().ToString()));
                                 Console.Write("\nWprowadź kod BLIK: ");
                                 Console.ReadLine();
-                                Console.WriteLine("Transakcja zakończona pomyślnie. Dziękujemy za zakupy.");
+                                Console.WriteLine("Potwierdź transakcję w aplikacji banku.");
+                                Thread.Sleep(10000);
+                                Console.WriteLine("\nTransakcja zakończona pomyślnie. Dziękujemy za zakupy.");
                                 magazyn.wykupiono(kupowane_produkty.produkty);
                                 koszyk_zalogowanego.wykupiono(kupowane_produkty.produkty);
                             }
@@ -705,24 +708,18 @@ namespace Sklep
                                 Console.WriteLine("Brak produktów do zakupienia. Wybierz produkty z dostępnych w sklepie.");
                             }
                             panel_glowny();
-                            return;
                         }),
                         new Akcja("c", "Usunięcie całej zawartości koszyka.", () =>
                         {
                             koszyk_zalogowanego.czysc();
                             Console.WriteLine("Koszyk został wyczyszczony.");
                             panel_glowny();
-                            return;
                         })
                     );
                 }
 
                 zbior_akcji.dodaj_akcje(
-                    new Akcja("x", "Powrót do panelu głównego.", () =>
-                    {
-                        panel_glowny();
-                        return;
-                    })
+                    new Akcja("x", "Powrót do panelu głównego.", panel_glowny)
                 );
                 zbior_akcji.uzytkownik_wybiera();
             }
@@ -734,7 +731,7 @@ namespace Sklep
                 {
                     liczba_sztuk_do_usuniecia = wczytaj_uint
                     (
-                        "Wybrany produkt występuje w liczbie: " + produkt_do_usuniecia.liczba_sztuk + " sztuk.\nLiczba sztuk do usunięcia",
+                        "Wybrany produkt występuje w liczbie " + produkt_do_usuniecia.liczba_sztuk + " sztuk.\nLiczba sztuk do usunięcia",
                         produkt_do_usuniecia.liczba_sztuk
                     );
                 }
@@ -766,18 +763,9 @@ namespace Sklep
                         uint numer_produktu = wczytaj_uint("Numer produktu", (uint)wyswietlone_produkty.Count) - 1;
                         Produkt wybrany = wyswietlone_produkty[(int)numer_produktu];
                         edytuj_produkt(wybrany);
-                        return;
                     }),
-                    new Akcja("+", "Dodaj nowy produkt.", () =>
-                    {
-                        dodawanie_produktu();
-                        return;
-                    }),
-                    new Akcja("x", "Powrót do panelu głównego.", () =>
-                    {
-                        panel_glowny();
-                        return;
-                    })
+                    new Akcja("+", "Dodaj nowy produkt.", dodawanie_produktu),
+                    new Akcja("x", "Powrót do panelu głównego.", panel_glowny)
                 );
                 zbior_akcji.uzytkownik_wybiera();
             }
@@ -795,7 +783,6 @@ namespace Sklep
                         edytowany_produkt.nazwa = Console.ReadLine()!;
                         Console.WriteLine("Nazwa produktu zmieniona.");
                         administrator_zarzadzanie_magazynem();
-                        return;
                     }),
                     new Akcja("+", "Zwiększ liczbę sztuk w magazynie.", () =>
                     {
@@ -803,14 +790,12 @@ namespace Sklep
                         edytowany_produkt.zwieksz_liczbe_sztuk(liczba_dodanych);
                         Console.WriteLine("Liczba sztuk zmieniona.");
                         administrator_zarzadzanie_magazynem();
-                        return;
                     }),
                     new Akcja("c", "Zmień cenę produktu.", () =>
                     {
                         edytowany_produkt.cena = wczytaj_double("Nowa cena");
                         Console.WriteLine("Cena zmieniona.");
                         administrator_zarzadzanie_magazynem();
-                        return;
                     })
                 );
                 zbior_akcji.uzytkownik_wybiera();
@@ -818,7 +803,7 @@ namespace Sklep
 
             private void dodawanie_produktu()
             {
-                string nazwa, wprowadzony_ciag;
+                string nazwa;
                 uint liczba_sztuk;
                 double cena;
 
@@ -834,13 +819,13 @@ namespace Sklep
                 administrator_zarzadzanie_magazynem();
             }
 
-            static private uint wczytaj_uint(string etykieta, uint maksimum = uint.MaxValue)
+            static private uint wczytaj_uint(string etykieta, uint maksimum = uint.MaxValue, uint minimum = 1)
             {
                 while (true)
                 {
                     Console.Write(etykieta + ": ");
                     string wprowadzony_ciag = Console.ReadLine()!;
-                    if (uint.TryParse(wprowadzony_ciag, out uint liczba) && liczba <= maksimum)
+                    if (uint.TryParse(wprowadzony_ciag, out uint liczba) && liczba <= maksimum && liczba >= minimum)
                     {
                         return liczba;
                     }
@@ -874,11 +859,11 @@ namespace Sklep
                 private string opis;
                 public Action czynnosci { get; private set; }
 
-                public Akcja(string polecenie, string opis, Action czynnosci)
+                public Akcja(string polecenie, string opis, Action? czynnosci)
                 {
                     this.polecenie = polecenie;
                     this.opis = opis;
-                    this.czynnosci = czynnosci;
+                    this.czynnosci = czynnosci ?? (Action)(() => { });
                 }
 
                 public string format_dla_uzytkownika()
@@ -923,8 +908,14 @@ namespace Sklep
                         Console.Write("Wpisz polecenie: ");
                         string wprowadzony_ciag = Console.ReadLine()!;
 
-                        Action czynnosci_do_wykonania = znajdz_po_poleceniu(wprowadzony_ciag)?.czynnosci ?? domyslne_czynnosci;
+                        Akcja? znaleziona_akcja = znajdz_po_poleceniu(wprowadzony_ciag);
+                        Action czynnosci_do_wykonania = znaleziona_akcja?.czynnosci ?? domyslne_czynnosci;
                         czynnosci_do_wykonania();
+
+                        if(znaleziona_akcja is not null)
+                        {
+                            return;
+                        }
                     } while (powtarzaj);
                 }
             }

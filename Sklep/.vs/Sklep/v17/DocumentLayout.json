@@ -11,9 +11,6 @@
       "RelativeMoniker": "D:2:0:{AFF9CB2E-FBC5-4117-AB2E-1FC625C5701A}|Sklep\\Sklep.csproj|solutionrelative:sklep\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Program Files\\dotnet\\sdk\\9.0.306\\Sdks\\Microsoft.NET.Sdk\\targets\\Microsoft.NET.EolTargetFrameworks.targets||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|"
-    },
-    {
       "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\Micha\u0142\\Documents\\GitHub\\Sklep\\Sklep\\dane\\magazyn.csv||{8B382828-6202-11D1-8870-0000F87579D2}",
       "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:dane\\magazyn.csv||{8B382828-6202-11D1-8870-0000F87579D2}"
     },
@@ -33,7 +30,7 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 9,
+          "SelectedChildIndex": 7,
           "Children": [
             {
               "$type": "Bookmark",
@@ -53,20 +50,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
-              "Title": "Microsoft.NET.EolTargetFrameworks.targets",
-              "DocumentMoniker": "C:\\Program Files\\dotnet\\sdk\\9.0.306\\Sdks\\Microsoft.NET.Sdk\\targets\\Microsoft.NET.EolTargetFrameworks.targets",
-              "RelativeDocumentMoniker": "..\\..\\..\\..\\..\\..\\Program Files\\dotnet\\sdk\\9.0.306\\Sdks\\Microsoft.NET.Sdk\\targets\\Microsoft.NET.EolTargetFrameworks.targets",
-              "ToolTip": "C:\\Program Files\\dotnet\\sdk\\9.0.306\\Sdks\\Microsoft.NET.Sdk\\targets\\Microsoft.NET.EolTargetFrameworks.targets",
-              "RelativeToolTip": "..\\..\\..\\..\\..\\..\\Program Files\\dotnet\\sdk\\9.0.306\\Sdks\\Microsoft.NET.Sdk\\targets\\Microsoft.NET.EolTargetFrameworks.targets",
-              "ViewState": "AgIAAAYAAAAAAAAAAAAuwB8AAAAEAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003801|",
-              "WhenOpened": "2025-12-08T13:49:16.034Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 4,
+              "DocumentIndex": 3,
               "Title": "koszyk1.csv",
               "DocumentMoniker": "C:\\Users\\Micha\u0142\\Documents\\GitHub\\Sklep\\Sklep\\dane\\koszyk1.csv",
               "RelativeDocumentMoniker": "dane\\koszyk1.csv",
@@ -78,7 +62,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 3,
+              "DocumentIndex": 2,
               "Title": "magazyn.csv",
               "DocumentMoniker": "C:\\Users\\Micha\u0142\\Documents\\GitHub\\Sklep\\Sklep\\dane\\magazyn.csv",
               "RelativeDocumentMoniker": "dane\\magazyn.csv",
@@ -90,7 +74,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 5,
+              "DocumentIndex": 4,
               "Title": "uzytkownicy.csv",
               "DocumentMoniker": "C:\\Users\\Micha\u0142\\Documents\\GitHub\\Sklep\\Sklep\\dane\\uzytkownicy.csv",
               "RelativeDocumentMoniker": "dane\\uzytkownicy.csv",
@@ -108,7 +92,7 @@
               "RelativeDocumentMoniker": "Sklep\\Program.cs",
               "ToolTip": "C:\\Users\\Micha\u0142\\Documents\\GitHub\\Sklep\\Sklep\\Sklep\\Program.cs",
               "RelativeToolTip": "Sklep\\Program.cs",
-              "ViewState": "AgIAAIADAAAAAAAAAAAAwJADAAAAAAAAAAAAAA==",
+              "ViewState": "AgIAAKQCAAAAAAAAAADgv7sCAABdAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-12-08T17:33:40.902Z",
               "EditorCaption": ""
@@ -142,7 +126,7 @@
               "RelativeDocumentMoniker": "Sklep\\Program.cs",
               "ToolTip": "C:\\Users\\Micha\u0142\\Documents\\GitHub\\Sklep\\Sklep\\Sklep\\Program.cs",
               "RelativeToolTip": "Sklep\\Program.cs",
-              "ViewState": "AgIAAFUDAAAAAAAAAAD4v3cDAAANAAAAAAAAAA==",
+              "ViewState": "AgIAAJ0BAAAAAAAAAAAAACwCAABLAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-12-08T17:43:49.902Z",
               "EditorCaption": ""
