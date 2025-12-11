@@ -612,7 +612,7 @@ namespace Sklep
                         }
                         else
                         {
-                            koszyk_zalogowanego.dodaj_produkt(new Produkt(wybrany));
+                            koszyk_zalogowanego.dodaj_produkt(new Produkt(wybrany, liczba_sztuk_do_dodania));
                             produkt_w_koszyku = koszyk_zalogowanego.znajdz_po_id(wybrany.id);
                         }
 

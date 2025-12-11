@@ -1,25 +1,21 @@
 {
   "Version": 1,
-  "WorkspaceRootPath": "C:\\Users\\Micha\u0142\\Documents\\GitHub\\Sklep\\Sklep\\",
+  "WorkspaceRootPath": "C:\\Users\\user\\Documents\\GitHub\\Sklep\\Sklep\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:1:0:{AFF9CB2E-FBC5-4117-AB2E-1FC625C5701A}|Sklep\\Sklep.csproj|c:\\users\\micha\u0142\\documents\\github\\sklep\\sklep\\sklep\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:1:0:{AFF9CB2E-FBC5-4117-AB2E-1FC625C5701A}|Sklep\\Sklep.csproj|solutionrelative:sklep\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{AFF9CB2E-FBC5-4117-AB2E-1FC625C5701A}|Sklep\\Sklep.csproj|c:\\users\\user\\documents\\github\\sklep\\sklep\\sklep\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{AFF9CB2E-FBC5-4117-AB2E-1FC625C5701A}|Sklep\\Sklep.csproj|solutionrelative:sklep\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:2:0:{AFF9CB2E-FBC5-4117-AB2E-1FC625C5701A}|Sklep\\Sklep.csproj|c:\\users\\micha\u0142\\documents\\github\\sklep\\sklep\\sklep\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:2:0:{AFF9CB2E-FBC5-4117-AB2E-1FC625C5701A}|Sklep\\Sklep.csproj|solutionrelative:sklep\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{AFF9CB2E-FBC5-4117-AB2E-1FC625C5701A}|Sklep\\Sklep.csproj|c:\\users\\user\\documents\\github\\sklep\\sklep\\sklep\\sklep.csproj||{04B8AB82-A572-4FEF-95CE-5222444B6B64}|",
+      "RelativeMoniker": "D:0:0:{AFF9CB2E-FBC5-4117-AB2E-1FC625C5701A}|Sklep\\Sklep.csproj|solutionrelative:sklep\\sklep.csproj||{04B8AB82-A572-4FEF-95CE-5222444B6B64}|"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\Micha\u0142\\Documents\\GitHub\\Sklep\\Sklep\\dane\\magazyn.csv||{8B382828-6202-11D1-8870-0000F87579D2}",
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\user\\Documents\\GitHub\\Sklep\\Sklep\\dane\\magazyn.csv||{8B382828-6202-11D1-8870-0000F87579D2}",
       "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:dane\\magazyn.csv||{8B382828-6202-11D1-8870-0000F87579D2}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\Micha\u0142\\Documents\\GitHub\\Sklep\\Sklep\\dane\\koszyk1.csv||{8B382828-6202-11D1-8870-0000F87579D2}",
-      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:dane\\koszyk1.csv||{8B382828-6202-11D1-8870-0000F87579D2}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\Micha\u0142\\Documents\\GitHub\\Sklep\\Sklep\\dane\\uzytkownicy.csv||{8B382828-6202-11D1-8870-0000F87579D2}",
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\user\\Documents\\GitHub\\Sklep\\Sklep\\dane\\uzytkownicy.csv||{8B382828-6202-11D1-8870-0000F87579D2}",
       "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:dane\\uzytkownicy.csv||{8B382828-6202-11D1-8870-0000F87579D2}"
     }
   ],
@@ -50,23 +46,23 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 3,
-              "Title": "koszyk1.csv",
-              "DocumentMoniker": "C:\\Users\\Micha\u0142\\Documents\\GitHub\\Sklep\\Sklep\\dane\\koszyk1.csv",
-              "RelativeDocumentMoniker": "dane\\koszyk1.csv",
-              "ToolTip": "C:\\Users\\Micha\u0142\\Documents\\GitHub\\Sklep\\Sklep\\dane\\koszyk1.csv",
-              "RelativeToolTip": "dane\\koszyk1.csv",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAIAAAADAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.002120|",
-              "WhenOpened": "2025-11-27T17:15:25.106Z"
+              "DocumentIndex": 1,
+              "Title": "Sklep",
+              "DocumentMoniker": "C:\\Users\\user\\Documents\\GitHub\\Sklep\\Sklep\\Sklep\\Sklep.csproj",
+              "RelativeDocumentMoniker": "Sklep\\Sklep.csproj",
+              "ToolTip": "C:\\Users\\user\\Documents\\GitHub\\Sklep\\Sklep\\Sklep\\Sklep.csproj",
+              "RelativeToolTip": "Sklep\\Sklep.csproj",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
+              "WhenOpened": "2025-12-11T15:21:48.103Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
               "DocumentIndex": 2,
               "Title": "magazyn.csv",
-              "DocumentMoniker": "C:\\Users\\Micha\u0142\\Documents\\GitHub\\Sklep\\Sklep\\dane\\magazyn.csv",
+              "DocumentMoniker": "C:\\Users\\user\\Documents\\GitHub\\Sklep\\Sklep\\dane\\magazyn.csv",
               "RelativeDocumentMoniker": "dane\\magazyn.csv",
-              "ToolTip": "C:\\Users\\Micha\u0142\\Documents\\GitHub\\Sklep\\Sklep\\dane\\magazyn.csv",
+              "ToolTip": "C:\\Users\\user\\Documents\\GitHub\\Sklep\\Sklep\\dane\\magazyn.csv",
               "RelativeToolTip": "dane\\magazyn.csv",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAiAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.002120|",
@@ -74,11 +70,11 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 4,
+              "DocumentIndex": 3,
               "Title": "uzytkownicy.csv",
-              "DocumentMoniker": "C:\\Users\\Micha\u0142\\Documents\\GitHub\\Sklep\\Sklep\\dane\\uzytkownicy.csv",
+              "DocumentMoniker": "C:\\Users\\user\\Documents\\GitHub\\Sklep\\Sklep\\dane\\uzytkownicy.csv",
               "RelativeDocumentMoniker": "dane\\uzytkownicy.csv",
-              "ToolTip": "C:\\Users\\Micha\u0142\\Documents\\GitHub\\Sklep\\Sklep\\dane\\uzytkownicy.csv",
+              "ToolTip": "C:\\Users\\user\\Documents\\GitHub\\Sklep\\Sklep\\dane\\uzytkownicy.csv",
               "RelativeToolTip": "dane\\uzytkownicy.csv",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAEAAAAXAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.002120|",
@@ -88,47 +84,13 @@
               "$type": "Document",
               "DocumentIndex": 0,
               "Title": "Program.cs",
-              "DocumentMoniker": "C:\\Users\\Micha\u0142\\Documents\\GitHub\\Sklep\\Sklep\\Sklep\\Program.cs",
+              "DocumentMoniker": "C:\\Users\\user\\Documents\\GitHub\\Sklep\\Sklep\\Sklep\\Program.cs",
               "RelativeDocumentMoniker": "Sklep\\Program.cs",
-              "ToolTip": "C:\\Users\\Micha\u0142\\Documents\\GitHub\\Sklep\\Sklep\\Sklep\\Program.cs",
+              "ToolTip": "C:\\Users\\user\\Documents\\GitHub\\Sklep\\Sklep\\Sklep\\Program.cs",
               "RelativeToolTip": "Sklep\\Program.cs",
-              "ViewState": "AgIAAKQCAAAAAAAAAADgv7sCAABdAAAAAAAAAA==",
+              "ViewState": "AgIAANcAAAAAAAAAAAAIwPUAAAANAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-12-08T17:33:40.902Z",
-              "EditorCaption": ""
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "Orientation": 0,
-      "VerticalTabListWidth": 256,
-      "FloatingWindowState": {
-        "Id": "f7a24893-faf4-4a61-93c0-19354d520d25",
-        "Display": 1,
-        "X": 295,
-        "Y": 174,
-        "Width": 1670,
-        "Height": 990,
-        "WindowState": 0
-      },
-      "DocumentGroups": [
-        {
-          "DockedWidth": 200,
-          "SelectedChildIndex": 0,
-          "Children": [
-            {
-              "$type": "Document",
-              "DocumentIndex": 1,
-              "Title": "Program.cs",
-              "DocumentMoniker": "C:\\Users\\Micha\u0142\\Documents\\GitHub\\Sklep\\Sklep\\Sklep\\Program.cs",
-              "RelativeDocumentMoniker": "Sklep\\Program.cs",
-              "ToolTip": "C:\\Users\\Micha\u0142\\Documents\\GitHub\\Sklep\\Sklep\\Sklep\\Program.cs",
-              "RelativeToolTip": "Sklep\\Program.cs",
-              "ViewState": "AgIAAJ0BAAAAAAAAAAAAACwCAABLAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-12-08T17:43:49.902Z",
               "EditorCaption": ""
             }
           ]

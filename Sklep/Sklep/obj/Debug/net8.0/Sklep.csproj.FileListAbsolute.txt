@@ -1,0 +1,15 @@
+C:\Users\user\Documents\GitHub\Sklep\Sklep\Sklep\bin\Debug\net8.0\Sklep.exe
+C:\Users\user\Documents\GitHub\Sklep\Sklep\Sklep\bin\Debug\net8.0\Sklep.deps.json
+C:\Users\user\Documents\GitHub\Sklep\Sklep\Sklep\bin\Debug\net8.0\Sklep.runtimeconfig.json
+C:\Users\user\Documents\GitHub\Sklep\Sklep\Sklep\bin\Debug\net8.0\Sklep.dll
+C:\Users\user\Documents\GitHub\Sklep\Sklep\Sklep\bin\Debug\net8.0\Sklep.pdb
+C:\Users\user\Documents\GitHub\Sklep\Sklep\Sklep\obj\Debug\net8.0\Sklep.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\user\Documents\GitHub\Sklep\Sklep\Sklep\obj\Debug\net8.0\Sklep.AssemblyInfoInputs.cache
+C:\Users\user\Documents\GitHub\Sklep\Sklep\Sklep\obj\Debug\net8.0\Sklep.AssemblyInfo.cs
+C:\Users\user\Documents\GitHub\Sklep\Sklep\Sklep\obj\Debug\net8.0\Sklep.csproj.CoreCompileInputs.cache
+C:\Users\user\Documents\GitHub\Sklep\Sklep\Sklep\obj\Debug\net8.0\Sklep.sourcelink.json
+C:\Users\user\Documents\GitHub\Sklep\Sklep\Sklep\obj\Debug\net8.0\Sklep.dll
+C:\Users\user\Documents\GitHub\Sklep\Sklep\Sklep\obj\Debug\net8.0\refint\Sklep.dll
+C:\Users\user\Documents\GitHub\Sklep\Sklep\Sklep\obj\Debug\net8.0\Sklep.pdb
+C:\Users\user\Documents\GitHub\Sklep\Sklep\Sklep\obj\Debug\net8.0\Sklep.genruntimeconfig.cache
+C:\Users\user\Documents\GitHub\Sklep\Sklep\Sklep\obj\Debug\net8.0\ref\Sklep.dll
