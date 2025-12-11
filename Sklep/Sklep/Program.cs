@@ -230,11 +230,12 @@ namespace Sklep
                 return null;
             }
 
-            public List<Produkt> wyswietl(string wyszukiwanie = "", bool pokaz_0_sztuk = false)
+            public List<Produkt> wyswietl(string wyszukiwanie = "", bool pokaz_0_sztuk = false, Func<Produkt, double>? sortowanie = null)
             {
-                int i = 1;
+                List<Produkt> lista_produktow = (sortowanie is not null) ? produkty.OrderBy(sortowanie).ToList() : produkty;
                 List<Produkt> wynik = new List<Produkt>();
-                foreach (Produkt produkt in produkty)
+                int i = 1;
+                foreach (Produkt produkt in lista_produktow)
                 {
                     if (produkt.nazwa.Contains(wyszukiwanie) && (produkt.liczba_sztuk > 0 || pokaz_0_sztuk))
                     {
@@ -573,13 +574,13 @@ namespace Sklep
                         string wyszukiwanie = Console.ReadLine()!;
                         klient_dostepne_produkty(wyszukiwanie);
                     }),
-                    new Akcja("k", "Wyświetl swój koszyk/Dokonaj zakupu.", klient_koszyk),
+                    new Akcja("k", "Wyświetl swój koszyk/Dokonaj zakupu.", () => { klient_koszyk(); } ),
                     new Akcja("x", "Zapisz dane i zamknij aplikację.", null)
                 );
                 zbior_akcji.uzytkownik_wybiera();
             }
 
-            private void klient_dostepne_produkty(string wyszukiwanie = "")
+            private void klient_dostepne_produkty(string wyszukiwanie = "", Func<Produkt, double>? sortowanie = null)
             {
                 Console.WriteLine(odstep);
                 Console.WriteLine("SKLEP - DOSTĘPNE PRODUKTY\n");
@@ -591,52 +592,65 @@ namespace Sklep
                 {
                     Console.WriteLine("Produkty dostępne aktualnie w sklepie:");
                 }
-                List<Produkt> wyswietlone_produkty = magazyn.wyswietl(wyszukiwanie);
+                List<Produkt> wyswietlone_produkty = magazyn.wyswietl(wyszukiwanie, sortowanie: sortowanie);
                 if (wyswietlone_produkty.Count == 0)
                 {
                     Console.WriteLine("Brak produktów do wyświetlenia.");
                 }
 
                 Zbior_akcji zbior_akcji = new Zbior_akcji();
-                zbior_akcji.dodaj_akcje(
-                    new Akcja("k", "Dodaj produkt do koszyka.", () =>
-                    {
-                        uint numer_produktu = wczytaj_uint("Numer produktu", (uint)wyswietlone_produkty.Count) - 1;
-                        Produkt wybrany = wyswietlone_produkty[(int)numer_produktu];
-                        Produkt? produkt_w_koszyku = koszyk_zalogowanego.znajdz_po_id(wybrany.id);
-                        uint liczba_sztuk_do_dodania = wczytaj_uint("Liczba sztuk do dodania do koszyka"); //Brak zabezpieczenia przed dodaniem do koszyka liczby sztuk przekraczajacej liczbe sztuk w magazynie jest zamierzony, gdyz uzytkownik moze planowac zakupic wiecej sztuk i czekac na ich dodanie do magazynu, aby wtedy dokonać zakupu. Proba zakupu zbyt duzej liczby sztuk zostanie udaremniona przez funkcje klient_koszyk()
+                if (wyswietlone_produkty.Count > 0)
+                {
+                    zbior_akcji.dodaj_akcje(
+                        new Akcja("s", "Sortowanie produktów.", () => {
+                            Zbior_akcji zbior_akcji = new Zbior_akcji();
+                            zbior_akcji.dodaj_akcje(
+                                new Akcja("ca", "Sortowanie rosnące po cenie.", () => { klient_dostepne_produkty(wyszukiwanie, (produkt) => produkt.cena); }),
+                                new Akcja("cz", "Sortowanie malejące po cenie.", () => { klient_dostepne_produkty(wyszukiwanie, (produkt) => -produkt.cena); }),
+                                new Akcja("la", "Sortowanie rosnące po liczbie sztuk.", () => { klient_dostepne_produkty(wyszukiwanie, (produkt) => produkt.liczba_sztuk); }),
+                                new Akcja("lz", "Sortowanie malejące po liczbie sztuk.", () => { klient_dostepne_produkty(wyszukiwanie, (produkt) => -produkt.liczba_sztuk); })
+                            );
+                            zbior_akcji.uzytkownik_wybiera();
+                        }),
+                        new Akcja("k", "Dodawanie produktu do koszyka.", () =>
+                        {
+                            uint numer_produktu = wczytaj_uint("Numer produktu", (uint)wyswietlone_produkty.Count) - 1;
+                            Produkt wybrany = wyswietlone_produkty[(int)numer_produktu];
+                            Produkt? produkt_w_koszyku = koszyk_zalogowanego.znajdz_po_id(wybrany.id);
+                            uint liczba_sztuk_do_dodania = wczytaj_uint("Liczba sztuk do dodania do koszyka"); //Brak zabezpieczenia przed dodaniem do koszyka liczby sztuk przekraczajacej liczbe sztuk w magazynie jest zamierzony, gdyz uzytkownik moze planowac zakupic wiecej sztuk i czekac na ich dodanie do magazynu, aby wtedy dokonać zakupu. Proba zakupu zbyt duzej liczby sztuk zostanie udaremniona przez funkcje klient_koszyk()
 
-                        if (produkt_w_koszyku is not null)
-                        {
-                            produkt_w_koszyku.zwieksz_liczbe_sztuk(liczba_sztuk_do_dodania);
-                        }
-                        else
-                        {
-                            koszyk_zalogowanego.dodaj_produkt(new Produkt(wybrany, liczba_sztuk_do_dodania));
-                            produkt_w_koszyku = koszyk_zalogowanego.znajdz_po_id(wybrany.id);
-                        }
+                            if (produkt_w_koszyku is not null)
+                            {
+                                produkt_w_koszyku.zwieksz_liczbe_sztuk(liczba_sztuk_do_dodania);
+                            }
+                            else
+                            {
+                                koszyk_zalogowanego.dodaj_produkt(new Produkt(wybrany, liczba_sztuk_do_dodania));
+                                produkt_w_koszyku = koszyk_zalogowanego.znajdz_po_id(wybrany.id);
+                            }
 
-                        if (produkt_w_koszyku?.liczba_sztuk > liczba_sztuk_do_dodania)
-                        {
-                            Console.WriteLine("Produkt " + produkt_w_koszyku.nazwa + " znajdował się już w koszyku. Zwiększono liczbę sztuk w koszyku o " + liczba_sztuk_do_dodania + ". Aktualna liczba sztuk wybranego produktu w koszyku: " + produkt_w_koszyku.liczba_sztuk + ".");
-                        }
-                        else
-                        {
-                            Console.WriteLine("Dodano do koszyka " + liczba_sztuk_do_dodania + " sztuk produktu " + wybrany.nazwa + ".");
-                        }
-                        klient_dostepne_produkty();
-                    }),
-                    new Akcja("x", "Powrót do panelu głównego.", panel_glowny)
-                );
+                            if (produkt_w_koszyku?.liczba_sztuk > liczba_sztuk_do_dodania)
+                            {
+                                Console.WriteLine("Produkt " + produkt_w_koszyku.nazwa + " znajdował się już w koszyku. Zwiększono liczbę sztuk w koszyku o " + liczba_sztuk_do_dodania + ". Aktualna liczba sztuk wybranego produktu w koszyku: " + produkt_w_koszyku.liczba_sztuk + ".");
+                            }
+                            else
+                            {
+                                Console.WriteLine("Dodano do koszyka " + liczba_sztuk_do_dodania + " sztuk produktu " + wybrany.nazwa + ".");
+                            }
+                            klient_dostepne_produkty();
+                        })
+                    );
+                }
+                zbior_akcji.dodaj_akcje(new Akcja("x", "Powrót do panelu głównego.", panel_glowny));
                 zbior_akcji.uzytkownik_wybiera();
             }
 
-            private void klient_koszyk()
+            private void klient_koszyk(Func<Produkt, double>? sortowanie = null)
             {
                 Console.WriteLine(odstep);
                 Console.WriteLine("TWÓJ KOSZYK\n");
                 Console.WriteLine("Produkty znajdujące się w twoim koszyku:");
-                List<Produkt> wyswietlone_produkty = koszyk_zalogowanego.wyswietl();
+                List<Produkt> wyswietlone_produkty = koszyk_zalogowanego.wyswietl(sortowanie: sortowanie);
 
                 if (wyswietlone_produkty.Count == 0)
                 {
@@ -659,55 +673,16 @@ namespace Sklep
                             Produkt wybrany = wyswietlone_produkty[(int)numer_produktu];
                             usuwanie_produktu(wybrany);
                         }),
-                        new Akcja("z", "Zakup całej zawartości koszyka.", () =>
-                        {
-                            Zbior_produktow produkty_niedostepne = new Zbior_produktow(magazyn.produkty_niedostepne(koszyk_zalogowanego.produkty));
-                            if (produkty_niedostepne.produkty.Count > 0)
-                            {
-                                Console.WriteLine("\nPoniższe produkty z twojego koszyka są aktualnie niedostępne.");
-                                produkty_niedostepne.wyswietl();
-
-                                while (true)
-                                {
-                                    Console.Write("\nWybierz akcję:\n z - Zakup dostępnych produktów.\n x - Powrót do panelu głównego.\nWpisz polecenie: ");
-                                    string akcja = Console.ReadLine()!;
-                                    if (akcja == "z")
-                                    {
-                                        break;
-                                    }
-                                    else if (akcja == "x")
-                                    {
-                                        panel_glowny();
-                                        return;
-                                    }
-                                    else
-                                    {
-                                        Console.WriteLine("Polecenie nierozpoznane.");
-                                    }
-                                }
-                            }
-
-                            Zbior_produktow kupowane_produkty = new Zbior_produktow(magazyn.produkty_dostepne(koszyk_zalogowanego.produkty));
-                            Console.WriteLine("\nPodsumowanie zakupu:");
-                            string podsumowanie_zakupu = kupowane_produkty.podsumowanie_zakupu();
-                            if (podsumowanie_zakupu != "")
-                            {
-                                Console.Write(podsumowanie_zakupu);
-                                Console.Write(" --------------------------------------------------------------------------------------------------");
-                                Console.WriteLine(Tekst.rozsun("\n Kwota do zapłaty (PLN): ", kupowane_produkty.kwota().ToString()));
-                                Console.Write("\nWprowadź kod BLIK: ");
-                                Console.ReadLine();
-                                Console.WriteLine("Potwierdź transakcję w aplikacji banku.");
-                                Thread.Sleep(10000);
-                                Console.WriteLine("\nTransakcja zakończona pomyślnie. Dziękujemy za zakupy.");
-                                magazyn.wykupiono(kupowane_produkty.produkty);
-                                koszyk_zalogowanego.wykupiono(kupowane_produkty.produkty);
-                            }
-                            else
-                            {
-                                Console.WriteLine("Brak produktów do zakupienia. Wybierz produkty z dostępnych w sklepie.");
-                            }
-                            panel_glowny();
+                        new Akcja("z", "Zakup całej zawartości koszyka.", zakup),
+                        new Akcja("s", "Sortowanie produktów.", () => {
+                            Zbior_akcji zbior_akcji = new Zbior_akcji();
+                            zbior_akcji.dodaj_akcje(
+                                new Akcja("ca", "Sortowanie rosnące po cenie.", () => { klient_koszyk((produkt) => produkt.cena); }),
+                                new Akcja("cz", "Sortowanie malejące po cenie.", () => { klient_koszyk((produkt) => -produkt.cena); }),
+                                new Akcja("la", "Sortowanie rosnące po liczbie sztuk.", () => { klient_koszyk((produkt) => produkt.liczba_sztuk); }),
+                                new Akcja("lz", "Sortowanie malejące po liczbie sztuk.", () => { klient_koszyk((produkt) => -produkt.liczba_sztuk); })
+                            );
+                            zbior_akcji.uzytkownik_wybiera();
                         }),
                         new Akcja("c", "Usunięcie całej zawartości koszyka.", () =>
                         {
@@ -741,7 +716,7 @@ namespace Sklep
                 return;
             }
 
-            public void administrator_zarzadzanie_magazynem(string wyszukiwanie = "")
+            public void administrator_zarzadzanie_magazynem(string wyszukiwanie = "", Func<Produkt, double>? sortowanie = null)
             {
                 Console.WriteLine(odstep);
                 Console.WriteLine("SKLEP - MAGAZYN\n");
@@ -753,11 +728,21 @@ namespace Sklep
                 {
                     Console.WriteLine("Produkty dostępne aktualnie w sklepie:");
                 }
-                List<Produkt> wyswietlone_produkty = magazyn.wyswietl(wyszukiwanie, true);
+                List<Produkt> wyswietlone_produkty = magazyn.wyswietl(wyszukiwanie, true, sortowanie);
                 Console.WriteLine();
 
                 Zbior_akcji zbior_akcji = new Zbior_akcji();
                 zbior_akcji.dodaj_akcje(
+                    new Akcja("s", "Sortowanie produktów.", () => {
+                        Zbior_akcji zbior_akcji = new Zbior_akcji();
+                        zbior_akcji.dodaj_akcje(
+                            new Akcja("ca", "Sortowanie rosnące po cenie.", () => { administrator_zarzadzanie_magazynem(wyszukiwanie, (produkt) => produkt.cena); }),
+                            new Akcja("cz", "Sortowanie malejące po cenie.", () => { administrator_zarzadzanie_magazynem(wyszukiwanie, (produkt) => -produkt.cena); }),
+                            new Akcja("la", "Sortowanie rosnące po liczbie sztuk.", () => { administrator_zarzadzanie_magazynem(wyszukiwanie, (produkt) => produkt.liczba_sztuk); }),
+                            new Akcja("lz", "Sortowanie malejące po liczbie sztuk.", () => { administrator_zarzadzanie_magazynem(wyszukiwanie, (produkt) => -produkt.liczba_sztuk); })
+                        );
+                        zbior_akcji.uzytkownik_wybiera();
+                    }),
                     new Akcja("e", "Edytuj produkt.", () =>
                     {
                         uint numer_produktu = wczytaj_uint("Numer produktu", (uint)wyswietlone_produkty.Count) - 1;
@@ -817,6 +802,57 @@ namespace Sklep
 
                 magazyn.dodaj_produkt(nazwa, liczba_sztuk, cena);
                 administrator_zarzadzanie_magazynem();
+            }
+
+            private void zakup()
+            {
+                Zbior_produktow produkty_niedostepne = new Zbior_produktow(magazyn.produkty_niedostepne(koszyk_zalogowanego.produkty));
+                if (produkty_niedostepne.produkty.Count > 0)
+                {
+                    Console.WriteLine("\nPoniższe produkty z twojego koszyka są aktualnie niedostępne.");
+                    produkty_niedostepne.wyswietl();
+
+                    while (true)
+                    {
+                        Console.Write("\nWybierz akcję:\n z - Zakup dostępnych produktów.\n x - Powrót do panelu głównego.\nWpisz polecenie: ");
+                        string akcja = Console.ReadLine()!;
+                        if (akcja == "z")
+                        {
+                            break;
+                        }
+                        else if (akcja == "x")
+                        {
+                            panel_glowny();
+                            return;
+                        }
+                        else
+                        {
+                            Console.WriteLine("Polecenie nierozpoznane.");
+                        }
+                    }
+                }
+
+                Zbior_produktow kupowane_produkty = new Zbior_produktow(magazyn.produkty_dostepne(koszyk_zalogowanego.produkty));
+                Console.WriteLine("\nPodsumowanie zakupu:");
+                string podsumowanie_zakupu = kupowane_produkty.podsumowanie_zakupu();
+                if (podsumowanie_zakupu != "")
+                {
+                    Console.Write(podsumowanie_zakupu);
+                    Console.Write(" --------------------------------------------------------------------------------------------------");
+                    Console.WriteLine(Tekst.rozsun("\n Kwota do zapłaty (PLN): ", kupowane_produkty.kwota().ToString()));
+                    Console.Write("\nWprowadź kod BLIK: ");
+                    Console.ReadLine();
+                    Console.WriteLine("Potwierdź transakcję w aplikacji banku.");
+                    Thread.Sleep(10000);
+                    Console.WriteLine("\nTransakcja zakończona pomyślnie. Dziękujemy za zakupy.");
+                    magazyn.wykupiono(kupowane_produkty.produkty);
+                    koszyk_zalogowanego.wykupiono(kupowane_produkty.produkty);
+                }
+                else
+                {
+                    Console.WriteLine("Brak produktów do zakupienia. Wybierz produkty z dostępnych w sklepie.");
+                }
+                panel_glowny();
             }
 
             static private uint wczytaj_uint(string etykieta, uint maksimum = uint.MaxValue, uint minimum = 1)
